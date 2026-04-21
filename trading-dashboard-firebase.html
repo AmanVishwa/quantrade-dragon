@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ICT/SMC Trading Journal</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-primary: #0d0e11;
+    --bg-secondary: #13151a;
+    --bg-card: #191c23;
+    --bg-hover: #1e2229;
+    --accent: #00d4aa;
+    --accent-dim: #00d4aa22;
+    --accent-gold: #f5a623;
+    --red: #ff4d4d;
+    --red-dim: #ff4d4d22;
+    --yellow: #f5a623;
+    --blue: #4d9fff;
+    --blue-dim: #4d9fff22;
+    --text-primary: #e8eaf0;
+    --text-secondary: #8b8fa8;
+    --text-muted: #555a6e;
+    --border: #23272f;
+    --border-accent: #00d4aa44;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-sans: 'Sora', sans-serif;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg-primary); color:var(--text-primary); font-family:var(--font-sans); font-size:14px; min-height:100vh; }
+
+  /* ── LOADING SCREEN ── */
+  #loading-screen {
+    min-height:100vh; display:flex; align-items:center; justify-content:center;
+    background:var(--bg-primary); flex-direction:column; gap:16px;
+  }
+  .spinner {
+    width:36px; height:36px; border:3px solid var(--border);
+    border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  /* ── LOGIN SCREEN ── */
+  #login-screen {
+    min-height:100vh; display:flex; align-items:center; justify-content:center;
+    background: var(--bg-primary);
+  }
+  .login-box {
+    width:100%; max-width:380px;
+    background:var(--bg-secondary);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:36px 32px;
+  }
+  .login-brand { text-align:center; margin-bottom:32px; }
+  .login-brand .mark { font-family:var(--font-mono); font-size:10px; color:var(--accent); letter-spacing:3px; }
+  .login-brand h1 { font-size:20px; font-weight:600; margin-top:6px; }
+  .login-brand p { font-size:12px; color:var(--text-muted); margin-top:4px; }
+  .login-error {
+    background:var(--red-dim); border:1px solid #ff4d4d44; border-radius:6px;
+    padding:10px 14px; color:var(--red); font-size:12px; margin-bottom:16px; display:none;
+  }
+  .forgot-link {
+    display:block; text-align:right; font-size:11px; color:var(--accent);
+    cursor:pointer; margin-top:6px; text-decoration:none;
+  }
+  .forgot-link:hover { text-decoration:underline; }
+
+  /* ── APP SHELL ── */
+  #app { display:none; }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    position:fixed; left:0; top:0; bottom:0; width:224px;
+    background:var(--bg-secondary); border-right:1px solid var(--border);
+    display:flex; flex-direction:column; z-index:100;
+    transition:transform 0.3s ease;
+  }
+  .sidebar-logo { padding:20px 18px 16px; border-bottom:1px solid var(--border); }
+  .sidebar-logo .logo-mark { font-family:var(--font-mono); font-size:10px; color:var(--accent); letter-spacing:3px; }
+  .sidebar-logo .logo-title { font-size:15px; font-weight:600; margin-top:4px; }
+  .sidebar-user {
+    padding:12px 18px; border-bottom:1px solid var(--border);
+    display:flex; align-items:center; gap:10px;
+  }
+  .user-avatar {
+    width:32px; height:32px; border-radius:50%;
+    background:var(--accent-dim); border:1px solid var(--border-accent);
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-mono); font-size:11px; font-weight:600; color:var(--accent);
+    flex-shrink:0;
+  }
+  .user-info { flex:1; min-width:0; }
+  .user-name { font-size:12px; font-weight:500; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .user-uid { font-family:var(--font-mono); font-size:9px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .user-role-badge { font-size:8px; padding:2px 6px; border-radius:3px; font-family:var(--font-mono); font-weight:600; letter-spacing:0.5px; }
+  .role-admin { background:#f5a62322; color:var(--yellow); border:1px solid #f5a62344; }
+  .role-user { background:var(--accent-dim); color:var(--accent); border:1px solid var(--border-accent); }
+
+  .sidebar-section-label { font-family:var(--font-mono); font-size:9px; letter-spacing:2px; color:var(--text-muted); text-transform:uppercase; padding:16px 18px 8px; }
+  .nav-item {
+    display:flex; align-items:center; gap:10px; padding:9px 18px;
+    cursor:pointer; color:var(--text-secondary); font-size:13px;
+    transition:all 0.15s; border-left:2px solid transparent; user-select:none;
+  }
+  .nav-item:hover { background:var(--bg-hover); color:var(--text-primary); }
+  .nav-item.active { color:var(--accent); border-left-color:var(--accent); background:var(--accent-dim); }
+  .nav-item svg { width:15px; height:15px; flex-shrink:0; }
+  .nav-item.admin-only { display:none; }
+  body.is-admin .nav-item.admin-only { display:flex; }
+
+  .pairs-list { flex:1; overflow-y:auto; padding-bottom:8px; }
+  .pairs-list::-webkit-scrollbar { width:3px; }
+  .pairs-list::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+  .pair-nav-item {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:8px 18px; cursor:pointer; color:var(--text-secondary);
+    font-family:var(--font-mono); font-size:12px; transition:all 0.15s;
+    border-left:2px solid transparent;
+  }
+  .pair-nav-item:hover { background:var(--bg-hover); color:var(--text-primary); }
+  .pair-nav-item.active { color:var(--accent); border-left-color:var(--accent); background:var(--accent-dim); }
+  .pair-badge { font-size:9px; padding:2px 6px; border-radius:3px; font-family:var(--font-mono); font-weight:500; }
+  .badge-bull { background:#00d4aa22; color:var(--accent); }
+  .badge-bear { background:#ff4d4d22; color:var(--red); }
+  .badge-neu { background:#555a6e33; color:var(--text-muted); }
+
+  .sidebar-footer { padding:12px 18px; border-top:1px solid var(--border); display:flex; flex-direction:column; gap:8px; }
+  .add-pair-btn {
+    width:100%; padding:8px; background:var(--accent-dim); border:1px solid var(--border-accent);
+    border-radius:6px; color:var(--accent); font-family:var(--font-mono); font-size:11px;
+    cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:all 0.2s;
+  }
+  .add-pair-btn:hover { background:var(--accent); color:#000; }
+  .logout-btn {
+    width:100%; padding:7px; background:transparent; border:1px solid var(--border);
+    border-radius:6px; color:var(--text-muted); font-family:var(--font-mono); font-size:10px;
+    cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:all 0.15s;
+  }
+  .logout-btn:hover { border-color:var(--red); color:var(--red); }
+
+  /* ── MAIN ── */
+  #main { margin-left:224px; min-height:100vh; display:flex; flex-direction:column; }
+  .topbar {
+    height:56px; background:var(--bg-secondary); border-bottom:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 28px; position:sticky; top:0; z-index:50;
+  }
+  .topbar-left { display:flex; align-items:center; gap:12px; }
+  .topbar-title { font-size:16px; font-weight:600; }
+  .topbar-sub { font-family:var(--font-mono); font-size:11px; color:var(--text-muted); }
+  .topbar-right { display:flex; align-items:center; gap:12px; }
+  .hamburger { display:none; background:none; border:none; color:var(--text-secondary); cursor:pointer; padding:4px; }
+  @media(max-width:768px){ .hamburger{display:block;} #sidebar{transform:translateX(-100%);width:240px;} #sidebar.open{transform:translateX(0);} #main{margin-left:0;} .form-row,.form-row-3{grid-template-columns:1fr;} .topbar{padding:0 16px;} #content{padding:16px;} }
+
+  .btn { padding:7px 16px; border-radius:6px; border:1px solid var(--border); background:transparent; color:var(--text-secondary); font-size:12px; font-family:var(--font-sans); cursor:pointer; transition:all 0.15s; display:inline-flex; align-items:center; gap:6px; }
+  .btn:hover { border-color:var(--text-muted); color:var(--text-primary); }
+  .btn-primary { background:var(--accent); border-color:var(--accent); color:#000; font-weight:500; }
+  .btn-primary:hover { opacity:0.9; color:#000; }
+  .btn-danger { border-color:var(--red-dim); color:var(--red); }
+  .btn-danger:hover { background:var(--red-dim); }
+  .btn-gold { border-color:#f5a62344; color:var(--yellow); }
+  .btn-gold:hover { background:#f5a62322; }
+
+  #content { padding:28px; flex:1; }
+
+  /* ── STAT CARDS ── */
+  .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-bottom:28px; }
+  .stat-card { background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:16px 18px; }
+  .stat-label { font-family:var(--font-mono); font-size:10px; letter-spacing:1.5px; color:var(--text-muted); text-transform:uppercase; margin-bottom:8px; }
+  .stat-value { font-family:var(--font-mono); font-size:26px; font-weight:600; color:var(--text-primary); line-height:1; }
+  .stat-value.green{color:var(--accent);} .stat-value.red{color:var(--red);} .stat-value.gold{color:var(--yellow);}
+  .stat-sub { font-size:11px; color:var(--text-muted); margin-top:4px; }
+
+  /* ── SECTION HEADER ── */
+  .section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+  .section-title { font-size:13px; font-weight:600; color:var(--text-primary); display:flex; align-items:center; gap:8px; }
+  .section-title::before { content:''; display:inline-block; width:3px; height:14px; background:var(--accent); border-radius:2px; }
+
+  /* ── PAIRS GRID ── */
+  .pairs-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; }
+  .pair-card { background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:16px; cursor:pointer; transition:all 0.2s; position:relative; overflow:hidden; }
+  .pair-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--border); transition:background 0.2s; }
+  .pair-card.bull::before{background:var(--accent);} .pair-card.bear::before{background:var(--red);}
+  .pair-card:hover { border-color:var(--text-muted); transform:translateY(-1px); }
+  .pair-symbol { font-family:var(--font-mono); font-size:18px; font-weight:600; }
+  .pair-category { font-size:10px; color:var(--text-muted); margin-top:2px; }
+  .pair-card-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:12px; }
+  .pair-card-meta { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+  .meta-pill { font-size:10px; padding:3px 8px; border-radius:4px; font-family:var(--font-mono); background:var(--bg-hover); color:var(--text-muted); border:1px solid var(--border); }
+  .meta-pill.bull{background:#00d4aa11;color:var(--accent);border-color:#00d4aa33;}
+  .meta-pill.bear{background:#ff4d4d11;color:var(--red);border-color:#ff4d4d33;}
+  .pair-card-stats { display:flex; border-top:1px solid var(--border); margin-top:12px; padding-top:12px; }
+  .pair-stat { flex:1; text-align:center; }
+  .pair-stat+.pair-stat { border-left:1px solid var(--border); }
+  .pair-stat-val { font-family:var(--font-mono); font-size:16px; font-weight:500; }
+  .pair-stat-val.green{color:var(--accent);} .pair-stat-val.red{color:var(--red);}
+  .pair-stat-lbl { font-size:10px; color:var(--text-muted); margin-top:2px; }
+  .tv-link { display:inline-flex; align-items:center; gap:4px; font-size:10px; font-family:var(--font-mono); color:var(--blue); text-decoration:none; padding:3px 8px; border-radius:4px; border:1px solid var(--blue-dim); background:var(--blue-dim); transition:all 0.15s; margin-top:8px; }
+  .tv-link:hover { background:var(--blue); color:#fff; }
+
+  /* ── ANALYSIS CARDS ── */
+  .analysis-card { background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:20px; margin-bottom:14px; transition:border-color 0.2s; }
+  .analysis-card:hover { border-color:var(--text-muted); }
+  .analysis-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:12px; }
+  .analysis-date { font-family:var(--font-mono); font-size:11px; color:var(--text-muted); }
+  .analysis-symbol { font-family:var(--font-mono); font-size:14px; font-weight:600; }
+  .analysis-badges { display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
+  .badge { font-size:9px; padding:2px 8px; border-radius:3px; font-family:var(--font-mono); font-weight:500; text-transform:uppercase; letter-spacing:0.5px; }
+  .badge-bull-full{background:#00d4aa22;color:var(--accent);border:1px solid #00d4aa44;}
+  .badge-bear-full{background:#ff4d4d22;color:var(--red);border:1px solid #ff4d4d44;}
+  .badge-neu-full{background:#55607022;color:var(--text-muted);border:1px solid #55607044;}
+  .badge-win{background:#00d4aa22;color:var(--accent);border:1px solid #00d4aa44;}
+  .badge-loss{background:#ff4d4d22;color:var(--red);border:1px solid #ff4d4d44;}
+  .badge-pending{background:#f5a62322;color:var(--yellow);border:1px solid #f5a62344;}
+  .badge-be{background:#4d9fff22;color:var(--blue);border:1px solid #4d9fff44;}
+  .analysis-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px; margin-bottom:14px; }
+  .analysis-field-label { font-size:9px; font-family:var(--font-mono); color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:3px; }
+  .analysis-field-value { font-family:var(--font-mono); font-size:12px; }
+  .analysis-notes { font-size:13px; color:var(--text-secondary); line-height:1.6; border-top:1px solid var(--border); padding-top:12px; margin-top:12px; }
+  .analysis-screenshots { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+  .screenshot-thumb { width:80px; height:60px; object-fit:cover; border-radius:6px; border:1px solid var(--border); cursor:pointer; transition:border-color 0.15s; }
+  .screenshot-thumb:hover { border-color:var(--accent); }
+  .analysis-actions { display:flex; gap:8px; margin-top:14px; border-top:1px solid var(--border); padding-top:14px; }
+
+  /* ── MODALS ── */
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.75); display:flex; align-items:center; justify-content:center; z-index:1000; padding:20px; }
+  .modal { background:var(--bg-secondary); border:1px solid var(--border); border-radius:14px; width:100%; max-width:620px; max-height:90vh; overflow-y:auto; }
+  .modal::-webkit-scrollbar{width:4px;} .modal::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+  .modal-header { padding:20px 24px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; background:var(--bg-secondary); z-index:1; }
+  .modal-title { font-size:15px; font-weight:600; font-family:var(--font-mono); }
+  .modal-close { background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:20px; width:28px; height:28px; display:flex; align-items:center; justify-content:center; border-radius:4px; transition:all 0.15s; }
+  .modal-close:hover { background:var(--bg-hover); color:var(--text-primary); }
+  .modal-body { padding:20px 24px; }
+  .modal-footer { padding:16px 24px 20px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:10px; }
+
+  .form-group { margin-bottom:16px; }
+  .form-label { display:block; font-size:11px; font-family:var(--font-mono); color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; }
+  .form-control { width:100%; padding:9px 12px; background:var(--bg-primary); border:1px solid var(--border); border-radius:6px; color:var(--text-primary); font-family:var(--font-sans); font-size:13px; transition:border-color 0.15s; outline:none; }
+  .form-control:focus { border-color:var(--accent); }
+  .form-control::placeholder { color:var(--text-muted); }
+  select.form-control option { background:var(--bg-secondary); }
+  textarea.form-control { resize:vertical; min-height:90px; line-height:1.5; }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .form-row-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+
+  /* ── ADMIN PANEL ── */
+  .user-table { width:100%; border-collapse:collapse; }
+  .user-table th { font-family:var(--font-mono); font-size:9px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted); padding:10px 14px; text-align:left; border-bottom:1px solid var(--border); }
+  .user-table td { padding:12px 14px; border-bottom:1px solid var(--border); font-size:13px; vertical-align:middle; }
+  .user-table tr:last-child td { border-bottom:none; }
+  .user-table tr:hover td { background:var(--bg-hover); }
+  .uid-chip { font-family:var(--font-mono); font-size:10px; color:var(--text-muted); background:var(--bg-hover); padding:2px 8px; border-radius:4px; border:1px solid var(--border); }
+
+  /* ── LIGHTBOX ── */
+  .lightbox { position:fixed; inset:0; background:rgba(0,0,0,0.92); display:flex; align-items:center; justify-content:center; z-index:2000; cursor:zoom-out; }
+  .lightbox img { max-width:92vw; max-height:90vh; border-radius:8px; object-fit:contain; }
+
+  /* ── EMPTY STATE ── */
+  .empty-state { text-align:center; padding:60px 20px; color:var(--text-muted); }
+  .empty-state svg { width:48px; height:48px; margin:0 auto 16px; opacity:0.3; }
+  .empty-state h3 { font-size:16px; color:var(--text-secondary); margin-bottom:8px; }
+  .empty-state p { font-size:13px; line-height:1.6; max-width:320px; margin:0 auto 20px; }
+
+  /* ── FILTER BAR ── */
+  .filter-bar { display:flex; gap:10px; align-items:center; margin-bottom:20px; flex-wrap:wrap; }
+  .filter-bar .form-control { width:auto; flex:1; min-width:160px; }
+  .filter-chip { padding:6px 14px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--text-muted); font-size:11px; font-family:var(--font-mono); cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+  .filter-chip:hover { border-color:var(--text-muted); color:var(--text-primary); }
+  .filter-chip.active { border-color:var(--accent); color:var(--accent); background:var(--accent-dim); }
+
+  /* ── UPLOAD ── */
+  .upload-area { border:2px dashed var(--border); border-radius:8px; padding:24px; text-align:center; cursor:pointer; transition:all 0.2s; color:var(--text-muted); font-size:12px; }
+  .upload-area:hover { border-color:var(--accent); color:var(--accent); }
+  .upload-area input { display:none; }
+  .screenshots-preview { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+  .ss-preview-item { position:relative; width:80px; height:60px; }
+  .ss-preview-item img { width:100%; height:100%; object-fit:cover; border-radius:6px; border:1px solid var(--border); }
+  .ss-remove { position:absolute; top:-6px; right:-6px; width:18px; height:18px; background:var(--red); border-radius:50%; border:none; color:#fff; font-size:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+
+  /* ── TOAST ── */
+  .toast { position:fixed; bottom:24px; right:24px; background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:12px 18px; color:var(--text-primary); font-size:13px; z-index:9999; display:flex; align-items:center; gap:10px; box-shadow:0 8px 32px rgba(0,0,0,0.5); animation:slideUp 0.3s ease; }
+  .toast.success{border-color:var(--border-accent);} .toast.error{border-color:#ff4d4d44;}
+  .toast-dot { width:7px; height:7px; border-radius:50%; }
+  .toast.success .toast-dot{background:var(--accent);} .toast.error .toast-dot{background:var(--red);}
+  @keyframes slideUp { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+
+  .winrate-bar { height:6px; background:var(--bg-hover); border-radius:3px; margin-top:6px; overflow:hidden; }
+  .winrate-fill { height:100%; background:var(--accent); border-radius:3px; transition:width 0.5s ease; }
+  .winrate-fill.red { background:var(--red); }
+
+  .page { display:none; }
+  .page.active { display:block; }
+
+  .divider { border:none; border-top:1px solid var(--border); margin:20px 0; }
+
+  .info-box { background:var(--bg-hover); border:1px solid var(--border); border-radius:8px; padding:14px 16px; font-size:12px; color:var(--text-secondary); line-height:1.6; margin-bottom:16px; }
+  .info-box strong { color:var(--accent); font-weight:500; }
+
+  /* saving indicator */
+  .saving-dot { width:6px; height:6px; border-radius:50%; background:var(--accent); display:inline-block; margin-left:6px; animation:pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading-screen">
+  <div class="spinner"></div>
+  <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted);letter-spacing:2px">CONNECTING...</div>
+</div>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen" style="display:none">
+  <div class="login-box">
+    <div class="login-brand">
+      <div class="mark">ICT / SMC</div>
+      <h1>Trade Journal</h1>
+      <p>Sign in to access your dashboard</p>
+    </div>
+    <div class="login-error" id="login-error">Invalid email or password.</div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input type="email" class="form-control" id="login-email" placeholder="Enter your email" autocomplete="email">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input type="password" class="form-control" id="login-password" placeholder="Enter password" autocomplete="current-password">
+      <a class="forgot-link" onclick="doForgotPassword()">Forgot password?</a>
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;padding:11px" onclick="doLogin()">Sign In</button>
+    <p style="text-align:center;font-size:11px;color:var(--text-muted);margin-top:20px">Contact admin to get access</p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <nav id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">ICT / SMC</div>
+      <div class="logo-title">Trade Journal</div>
+    </div>
+    <div class="sidebar-user">
+      <div class="user-avatar" id="sb-avatar">—</div>
+      <div class="user-info">
+        <div class="user-name" id="sb-name">—</div>
+        <div class="user-uid" id="sb-email">—</div>
+      </div>
+    </div>
+    <div class="sidebar-section-label">Navigation</div>
+    <div class="nav-item active" data-nav="overview">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Overview
+    </div>
+    <div class="nav-item" data-nav="log">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
+      Analysis Log
+    </div>
+    <div class="nav-item" data-nav="pairs">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M3 12h18M3 18h18"/><circle cx="6" cy="6" r="1.5" fill="currentColor"/><circle cx="6" cy="12" r="1.5" fill="currentColor"/><circle cx="6" cy="18" r="1.5" fill="currentColor"/></svg>
+      Pairs
+    </div>
+    <div class="nav-item admin-only" data-nav="admin">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      User Management
+    </div>
+    <div class="sidebar-section-label">Watchlist</div>
+    <div class="pairs-list" id="sidebar-pairs"></div>
+    <div class="sidebar-footer">
+      <button class="add-pair-btn" onclick="openAddPair()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        Add Pair
+      </button>
+      <button class="logout-btn" onclick="doLogout()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        Sign Out
+      </button>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div id="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="hamburger" onclick="toggleSidebar()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <div>
+          <div class="topbar-title" id="topbar-title">Overview</div>
+          <div class="topbar-sub" id="topbar-sub">ICT/SMC Trading Journal</div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <span class="user-role-badge" id="topbar-role-badge"></span>
+        <button class="btn btn-primary" id="primary-action-btn" onclick="openAddAnalysis()">+ New Analysis</button>
+      </div>
+    </header>
+
+    <div id="content">
+
+      <!-- OVERVIEW -->
+      <div class="page active" id="page-overview">
+        <div class="stats-grid" id="stats-grid"></div>
+        <div class="section-header">
+          <div class="section-title">Tracked Pairs</div>
+          <button class="btn" onclick="openAddPair()">+ Add Pair</button>
+        </div>
+        <div class="pairs-grid" id="pairs-grid"></div>
+      </div>
+
+      <!-- LOG -->
+      <div class="page" id="page-log">
+        <div class="filter-bar">
+          <input type="text" class="form-control" id="log-search" placeholder="Search analysis..." oninput="renderLog()">
+          <select class="form-control" id="log-pair-filter" style="width:auto" onchange="renderLog()">
+            <option value="">All Pairs</option>
+          </select>
+          <button class="filter-chip active" data-filter="all" onclick="setFilter(this,'all')">All</button>
+          <button class="filter-chip" data-filter="Bullish" onclick="setFilter(this,'Bullish')">Bullish</button>
+          <button class="filter-chip" data-filter="Bearish" onclick="setFilter(this,'Bearish')">Bearish</button>
+          <button class="filter-chip" data-filter="Win" onclick="setFilter(this,'Win')">Wins</button>
+          <button class="filter-chip" data-filter="Loss" onclick="setFilter(this,'Loss')">Losses</button>
+        </div>
+        <div id="log-list"></div>
+      </div>
+
+      <!-- PAIR DETAIL -->
+      <div class="page" id="page-pair-detail">
+        <div id="pair-detail-content"></div>
+      </div>
+
+      <!-- PAIRS LIST -->
+      <div class="page" id="page-pairs">
+        <div class="section-header">
+          <div class="section-title">All Pairs</div>
+          <button class="btn btn-primary" onclick="openAddPair()">+ Add Pair</button>
+        </div>
+        <div class="pairs-grid" id="all-pairs-grid"></div>
+      </div>
+
+      <!-- ADMIN PAGE -->
+      <div class="page" id="page-admin">
+        <div class="section-header">
+          <div class="section-title">User Management</div>
+          <button class="btn btn-gold" onclick="openAddUser()">+ Create User</button>
+        </div>
+        <div class="info-box">
+          <strong>Admin Panel</strong> — Create user accounts and share credentials with traders. Each user gets their own isolated data in Firebase. Only you (admin) can manage all users.
+        </div>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;overflow:hidden;">
+          <table class="user-table" id="user-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="user-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- PAIR MODAL -->
+<div class="modal-overlay" id="pair-modal" style="display:none">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="pair-modal-title">Add Pair</div>
+      <button class="modal-close" onclick="closePairModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="pair-edit-id">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Symbol *</label>
+          <input type="text" class="form-control" id="pair-symbol" placeholder="e.g. XAUUSD" style="text-transform:uppercase">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select class="form-control" id="pair-category">
+            <option>Forex Major</option><option>Forex Minor</option><option>Forex Exotic</option>
+            <option>Metals</option><option>Index</option><option>Crypto</option><option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">HTF Bias</label>
+          <select class="form-control" id="pair-htf-bias">
+            <option value="">None</option><option>Bullish</option><option>Bearish</option><option>Neutral</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Session Focus</label>
+          <select class="form-control" id="pair-session">
+            <option value="">Any</option><option>London</option><option>New York</option>
+            <option>Asian</option><option>London + NY</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">TradingView Chart URL</label>
+        <input type="url" class="form-control" id="pair-tv-url" placeholder="https://www.tradingview.com/chart/...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <textarea class="form-control" id="pair-notes" placeholder="Key levels, confluences, context..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closePairModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="savePair()">Save Pair</button>
+    </div>
+  </div>
+</div>
+
+<!-- ANALYSIS MODAL -->
+<div class="modal-overlay" id="analysis-modal" style="display:none">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="analysis-modal-title">New Analysis</div>
+      <button class="modal-close" onclick="closeAnalysisModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="analysis-edit-id">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Pair *</label>
+          <select class="form-control" id="analysis-pair"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Date *</label>
+          <input type="date" class="form-control" id="analysis-date">
+        </div>
+      </div>
+      <div class="form-row-3">
+        <div class="form-group">
+          <label class="form-label">Bias</label>
+          <select class="form-control" id="analysis-bias">
+            <option>Bullish</option><option>Bearish</option><option>Neutral</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Timeframe</label>
+          <select class="form-control" id="analysis-tf">
+            <option>HTF (D1/W1)</option><option>MTF (H4)</option><option>LTF (H1/M15)</option><option>Entry (M5/M1)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Session</label>
+          <select class="form-control" id="analysis-session">
+            <option>London</option><option>New York</option><option>Asian</option>
+            <option>London Kill Zone</option><option>NY Kill Zone</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row-3">
+        <div class="form-group">
+          <label class="form-label">Entry</label>
+          <input type="number" step="any" class="form-control" id="analysis-entry" placeholder="Price">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Stop Loss</label>
+          <input type="number" step="any" class="form-control" id="analysis-sl" placeholder="Price">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Take Profit</label>
+          <input type="number" step="any" class="form-control" id="analysis-tp" placeholder="Price">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">SMC Setup</label>
+          <select class="form-control" id="analysis-setup">
+            <option value="">Select...</option>
+            <option>OB (Order Block)</option><option>FVG (Fair Value Gap)</option>
+            <option>OTE (Optimal Trade Entry)</option><option>Breaker Block</option>
+            <option>Mitigation Block</option><option>Liquidity Sweep</option>
+            <option>MSS (Market Structure Shift)</option><option>CISD</option>
+            <option>PD Array</option><option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Result</label>
+          <select class="form-control" id="analysis-result">
+            <option value="Pending">Pending</option><option value="Win">Win</option>
+            <option value="Loss">Loss</option><option value="Breakeven">Breakeven</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Analysis Notes</label>
+        <textarea class="form-control" id="analysis-notes" rows="4" placeholder="HTF context, liquidity targeted, OB location, MSS confirmation, entry model..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Screenshots</label>
+        <div class="upload-area" onclick="document.getElementById('screenshot-input').click()">
+          <input type="file" id="screenshot-input" accept="image/*" multiple onchange="handleScreenshots(this)">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 8px;display:block;opacity:0.4"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+          Click to upload screenshots (HTF, LTF, entry)
+        </div>
+        <div class="screenshots-preview" id="screenshots-preview"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeAnalysisModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveAnalysis()">Save Analysis</button>
+    </div>
+  </div>
+</div>
+
+<!-- CREATE USER MODAL (admin only) -->
+<div class="modal-overlay" id="user-modal" style="display:none">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-header">
+      <div class="modal-title">Create User</div>
+      <button class="modal-close" onclick="closeUserModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input type="text" class="form-control" id="user-fullname" placeholder="e.g. Rahul Sharma">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email *</label>
+        <input type="email" class="form-control" id="user-email" placeholder="e.g. rahul@gmail.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password *</label>
+        <input type="text" class="form-control" id="user-password" placeholder="Min 6 characters">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Role</label>
+        <select class="form-control" id="user-role">
+          <option value="user">User (Trader)</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <div class="info-box" style="margin-top:8px">
+        After creating, share the <strong>email + password</strong> with the trader. They can reset their password anytime via <strong>Forgot Password</strong> on the login screen.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeUserModal()">Cancel</button>
+      <button class="btn btn-primary" id="create-user-btn" onclick="saveUser()">Create User</button>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" style="display:none" onclick="closeLightbox()">
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<!-- TOAST -->
+<div class="toast success" id="toast" style="display:none">
+  <div class="toast-dot"></div>
+  <span id="toast-msg"></span>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!-- FIREBASE SDK -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ═══════════════════════════════════════════════════════
+// 🔥 PASTE YOUR FIREBASE CONFIG HERE
+// ═══════════════════════════════════════════════════════
+const firebaseConfig = {
+  apiKey: "AIzaSyBJ5kr1Ij4KiAikY_YgsCyBWN5_S9VVGFE",
+  authDomain: "trading-journal-58007.firebaseapp.com",
+  projectId: "trading-journal-58007",
+  storageBucket: "trading-journal-58007.firebasestorage.app",
+  messagingSenderId: "657498416128",
+  appId: "1:657498416128:web:13677b96d61103b607a4e5"
+};
+
+// ── Init Firebase ──
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// ── State ──
+let currentUser = null;
+let currentUserProfile = null;
+let state = { pairs: [], analyses: [] };
+let logFilter = 'all';
+let currentPage = 'overview';
+let currentPairForDetail = null;
+let pendingScreenshots = [];
+
+const DEFAULT_PAIRS = [
+  { id:'p_eurusd', symbol:'EURUSD', category:'Forex Major', htfBias:'Bullish', session:'London + NY', tvUrl:'https://www.tradingview.com/chart/?symbol=EURUSD', notes:'', createdAt:Date.now() },
+  { id:'p_gbpusd', symbol:'GBPUSD', category:'Forex Major', htfBias:'Bearish', session:'London', tvUrl:'https://www.tradingview.com/chart/?symbol=GBPUSD', notes:'', createdAt:Date.now() },
+  { id:'p_usdjpy', symbol:'USDJPY', category:'Forex Major', htfBias:'', session:'Asian', tvUrl:'https://www.tradingview.com/chart/?symbol=USDJPY', notes:'', createdAt:Date.now() },
+  { id:'p_xauusd', symbol:'XAUUSD', category:'Metals', htfBias:'Bullish', session:'London + NY', tvUrl:'https://www.tradingview.com/chart/?symbol=XAUUSD', notes:'', createdAt:Date.now() },
+  { id:'p_nas100', symbol:'NAS100', category:'Index', htfBias:'', session:'New York', tvUrl:'https://www.tradingview.com/chart/?symbol=NASDAQ%3ANDX', notes:'', createdAt:Date.now() },
+];
+
+// ═══════════════════════════════════════════════════════
+// AUTH STATE LISTENER
+// ═══════════════════════════════════════════════════════
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    currentUser = user;
+    await bootApp(user);
+  } else {
+    currentUser = null;
+    showLoginScreen();
+  }
+});
+
+function showLoginScreen() {
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+}
+
+// ═══════════════════════════════════════════════════════
+// LOGIN / LOGOUT / FORGOT PASSWORD
+// ═══════════════════════════════════════════════════════
+window.doLogin = async function() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  errEl.style.display = 'none';
+  if (!email || !password) { errEl.textContent = 'Enter email and password.'; errEl.style.display = 'block'; return; }
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch(e) {
+    errEl.textContent = 'Invalid email or password.';
+    errEl.style.display = 'block';
+  }
+};
+
+window.doLogout = async function() {
+  await signOut(auth);
+};
+
+window.doForgotPassword = async function() {
+  const email = document.getElementById('login-email').value.trim();
+  if (!email) {
+    const errEl = document.getElementById('login-error');
+    errEl.textContent = 'Enter your email first, then click Forgot Password.';
+    errEl.style.display = 'block';
+    return;
+  }
+  try {
+    await sendPasswordResetEmail(auth, email);
+    showToast('Password reset email sent! Check your inbox.', 'success');
+  } catch(e) {
+    showToast('Could not send reset email. Check the address.', 'error');
+  }
+};
+
+document.getElementById('login-password').addEventListener('keydown', e => { if (e.key === 'Enter') window.doLogin(); });
+document.getElementById('login-email').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('login-password').focus(); });
+
+// ═══════════════════════════════════════════════════════
+// BOOT APP
+// ═══════════════════════════════════════════════════════
+async function bootApp(user) {
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+
+  // Load user profile from Firestore
+  const profileRef = doc(db, 'users', user.uid);
+  const profileSnap = await getDoc(profileRef);
+
+  if (profileSnap.exists()) {
+    currentUserProfile = profileSnap.data();
+  } else {
+    // First time login — create profile
+    currentUserProfile = { fullname: user.email.split('@')[0], email: user.email, role: 'user', createdAt: new Date().toISOString().split('T')[0] };
+    await setDoc(profileRef, currentUserProfile);
+  }
+
+  // Load user trading data
+  const dataRef = doc(db, 'userdata', user.uid);
+  const dataSnap = await getDoc(dataRef);
+
+  if (dataSnap.exists()) {
+    state = dataSnap.data();
+    if (!state.pairs) state.pairs = [];
+    if (!state.analyses) state.analyses = [];
+  } else {
+    // First time — seed default pairs
+    state = { pairs: DEFAULT_PAIRS.map(p => ({ ...p, id: p.id + '_' + user.uid })), analyses: [] };
+    await setDoc(dataRef, state);
+  }
+
+  // UI setup
+  const initials = (currentUserProfile.fullname || user.email).substring(0, 2).toUpperCase();
+  document.getElementById('sb-avatar').textContent = initials;
+  document.getElementById('sb-name').textContent = currentUserProfile.fullname || user.email;
+  document.getElementById('sb-email').textContent = user.email;
+
+  const roleBadge = document.getElementById('topbar-role-badge');
+  roleBadge.textContent = (currentUserProfile.role || 'user').toUpperCase();
+  roleBadge.className = 'user-role-badge ' + (currentUserProfile.role === 'admin' ? 'role-admin' : 'role-user');
+
+  document.body.classList.toggle('is-admin', currentUserProfile.role === 'admin');
+
+  navigate('overview');
+  renderSidebarPairs();
+}
+
+// ═══════════════════════════════════════════════════════
+// SAVE STATE TO FIRESTORE
+// ═══════════════════════════════════════════════════════
+let saveTimer = null;
+async function saveState() {
+  if (!currentUser) return;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    try {
+      await setDoc(doc(db, 'userdata', currentUser.uid), state);
+    } catch(e) {
+      showToast('Save failed. Check connection.', 'error');
+    }
+  }, 800); // debounce 800ms
+}
+
+// ═══════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════
+window.navigate = function(page, extra) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  currentPage = page;
+  document.getElementById('page-' + page).classList.add('active');
+  const navEl = document.querySelector(`[data-nav="${page}"]`);
+  if (navEl) navEl.classList.add('active');
+
+  const titles = { overview:'Overview', log:'Analysis Log', pairs:'All Pairs', 'pair-detail': extra ? extra.symbol : 'Pair', admin:'User Management' };
+  const subs = { overview:'Dashboard', log:'All analysis entries', pairs:'Manage watchlist', 'pair-detail': extra ? extra.category : '', admin:'Admin · Manage accounts' };
+  document.getElementById('topbar-title').textContent = titles[page] || page;
+  document.getElementById('topbar-sub').textContent = subs[page] || '';
+
+  const btn = document.getElementById('primary-action-btn');
+  if (page === 'pairs') { btn.textContent = '+ Add Pair'; btn.onclick = () => window.openAddPair(); }
+  else if (page === 'admin') { btn.textContent = '+ Create User'; btn.onclick = () => window.openAddUser(); }
+  else { btn.textContent = '+ New Analysis'; btn.onclick = () => window.openAddAnalysis(); }
+
+  if (page === 'overview') renderOverview();
+  if (page === 'log') { renderLog(); populatePairFilter(); }
+  if (page === 'pairs') renderPairsPage();
+  if (page === 'pair-detail' && extra) { currentPairForDetail = extra; renderPairDetail(extra); }
+  if (page === 'admin' && currentUserProfile.role === 'admin') renderAdminPanel();
+
+  if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
+};
+
+document.querySelectorAll('[data-nav]').forEach(el => {
+  el.addEventListener('click', () => {
+    if (el.dataset.nav === 'admin' && currentUserProfile.role !== 'admin') return;
+    window.navigate(el.dataset.nav);
+  });
+});
+
+window.toggleSidebar = function() { document.getElementById('sidebar').classList.toggle('open'); };
+
+// ═══════════════════════════════════════════════════════
+// SIDEBAR PAIRS
+// ═══════════════════════════════════════════════════════
+function renderSidebarPairs() {
+  const container = document.getElementById('sidebar-pairs');
+  container.innerHTML = '';
+  state.pairs.forEach(pair => {
+    const bias = pair.htfBias;
+    const bc = bias === 'Bullish' ? 'badge-bull' : bias === 'Bearish' ? 'badge-bear' : 'badge-neu';
+    const bt = bias ? bias.substring(0, 4).toUpperCase() : '—';
+    const el = document.createElement('div');
+    el.className = 'pair-nav-item' + (currentPairForDetail && currentPairForDetail.id === pair.id ? ' active' : '');
+    el.innerHTML = `<span>${pair.symbol}</span><span class="pair-badge ${bc}">${bt}</span>`;
+    el.onclick = () => window.navigate('pair-detail', pair);
+    container.appendChild(el);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// OVERVIEW
+// ═══════════════════════════════════════════════════════
+function renderOverview() { renderStats(); renderPairsGrid(document.getElementById('pairs-grid')); }
+
+function calcStats() {
+  const total = state.analyses.length;
+  const wins = state.analyses.filter(a => a.result === 'Win').length;
+  const losses = state.analyses.filter(a => a.result === 'Loss').length;
+  const completed = wins + losses;
+  const wr = completed > 0 ? Math.round((wins / completed) * 100) : 0;
+  return { total, wins, losses, wr, pairs: state.pairs.length };
+}
+
+function renderStats() {
+  const s = calcStats();
+  document.getElementById('stats-grid').innerHTML = `
+    <div class="stat-card"><div class="stat-label">Total Analyses</div><div class="stat-value">${s.total}</div><div class="stat-sub">Across ${s.pairs} pairs</div></div>
+    <div class="stat-card"><div class="stat-label">Win Rate</div><div class="stat-value ${s.wr >= 50 ? 'green' : 'red'}">${s.wr}%</div><div class="stat-sub">${s.wins}W / ${s.losses}L</div><div class="winrate-bar"><div class="winrate-fill ${s.wr < 50 ? 'red' : ''}" style="width:${s.wr}%"></div></div></div>
+    <div class="stat-card"><div class="stat-label">Wins</div><div class="stat-value green">${s.wins}</div></div>
+    <div class="stat-card"><div class="stat-label">Losses</div><div class="stat-value red">${s.losses}</div></div>
+    <div class="stat-card"><div class="stat-label">Pairs Tracked</div><div class="stat-value gold">${s.pairs}</div></div>
+  `;
+}
+
+function renderPairsGrid(container) {
+  container.innerHTML = '';
+  if (state.pairs.length === 0) {
+    container.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg><h3>No pairs yet</h3><p>Add your first trading pair.</p><button class="btn btn-primary" onclick="window.openAddPair()">+ Add Pair</button></div>`;
+    return;
+  }
+  state.pairs.forEach(pair => {
+    const analyses = state.analyses.filter(a => a.pairId === pair.id);
+    const wins = analyses.filter(a => a.result === 'Win').length;
+    const losses = analyses.filter(a => a.result === 'Loss').length;
+    const completed = wins + losses;
+    const wr = completed > 0 ? Math.round((wins / completed) * 100) : '--';
+    const bc = pair.htfBias === 'Bullish' ? 'bull' : pair.htfBias === 'Bearish' ? 'bear' : '';
+    const bcc = pair.htfBias === 'Bullish' ? 'badge-bull-full' : pair.htfBias === 'Bearish' ? 'badge-bear-full' : '';
+    const card = document.createElement('div');
+    card.className = `pair-card ${bc}`;
+    card.innerHTML = `
+      <div class="pair-card-header">
+        <div><div class="pair-symbol">${pair.symbol}</div><div class="pair-category">${pair.category}</div></div>
+        <div>${pair.htfBias ? `<span class="badge ${bcc}">${pair.htfBias}</span>` : ''}</div>
+      </div>
+      <div class="pair-card-meta">
+        ${pair.session ? `<span class="meta-pill">${pair.session}</span>` : ''}
+        <span class="meta-pill">${analyses.length} entries</span>
+      </div>
+      <div class="pair-card-stats">
+        <div class="pair-stat"><div class="pair-stat-val ${typeof wr === 'number' && wr >= 50 ? 'green' : typeof wr === 'number' ? 'red' : ''}">${typeof wr === 'number' ? wr + '%' : wr}</div><div class="pair-stat-lbl">Win Rate</div></div>
+        <div class="pair-stat"><div class="pair-stat-val green">${wins}</div><div class="pair-stat-lbl">Wins</div></div>
+        <div class="pair-stat"><div class="pair-stat-val red">${losses}</div><div class="pair-stat-lbl">Losses</div></div>
+      </div>
+      ${pair.tvUrl ? `<a class="tv-link" href="${pair.tvUrl}" target="_blank" rel="noopener"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14l4 4 6-7"/></svg>Open Chart</a>` : ''}
+    `;
+    card.addEventListener('click', e => { if (e.target.closest('.tv-link')) return; window.navigate('pair-detail', pair); });
+    container.appendChild(card);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// PAIR DETAIL
+// ═══════════════════════════════════════════════════════
+function renderPairDetail(pair) {
+  const analyses = state.analyses.filter(a => a.pairId === pair.id).sort((a, b) => new Date(b.date) - new Date(a.date));
+  const wins = analyses.filter(a => a.result === 'Win').length;
+  const losses = analyses.filter(a => a.result === 'Loss').length;
+  const completed = wins + losses;
+  const wr = completed > 0 ? Math.round((wins / completed) * 100) : 0;
+  const bc = pair.htfBias === 'Bullish' ? 'bull' : pair.htfBias === 'Bearish' ? 'bear' : '';
+
+  document.getElementById('primary-action-btn').onclick = () => window.openAddAnalysis(pair.id);
+  document.getElementById('primary-action-btn').textContent = '+ Add Analysis';
+
+  document.getElementById('pair-detail-content').innerHTML = `
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+      <div>
+        <div style="font-family:var(--font-mono);font-size:28px;font-weight:600">${pair.symbol}</div>
+        <div style="color:var(--text-muted);font-size:13px;margin-top:4px">${pair.category}${pair.session ? ' · ' + pair.session : ''}</div>
+        ${pair.htfBias ? `<div style="margin-top:8px"><span class="badge badge-${bc === 'bull' ? 'bull-full' : bc === 'bear' ? 'bear-full' : 'neu-full'}" style="font-size:11px;padding:4px 12px">${pair.htfBias} HTF</span></div>` : ''}
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        ${pair.tvUrl ? `<a class="tv-link" href="${pair.tvUrl}" target="_blank" rel="noopener" style="font-size:12px;padding:7px 14px">Open TradingView</a>` : ''}
+        <button class="btn" onclick="window.editPair('${pair.id}')">Edit Pair</button>
+        <button class="btn btn-danger" onclick="window.deletePair('${pair.id}')">Delete</button>
+      </div>
+    </div>
+    <div class="stats-grid" style="margin-bottom:24px">
+      <div class="stat-card"><div class="stat-label">Total Entries</div><div class="stat-value">${analyses.length}</div></div>
+      <div class="stat-card"><div class="stat-label">Win Rate</div><div class="stat-value ${wr >= 50 ? 'green' : wr > 0 ? 'red' : ''}">${wr > 0 ? wr + '%' : '--'}</div><div class="winrate-bar"><div class="winrate-fill ${wr < 50 ? 'red' : ''}" style="width:${wr}%"></div></div></div>
+      <div class="stat-card"><div class="stat-label">Wins</div><div class="stat-value green">${wins}</div></div>
+      <div class="stat-card"><div class="stat-label">Losses</div><div class="stat-value red">${losses}</div></div>
+    </div>
+    ${pair.notes ? `<div class="analysis-card" style="margin-bottom:24px"><div class="section-title" style="margin-bottom:10px">Pair Notes</div><div style="color:var(--text-secondary);font-size:13px;line-height:1.6">${pair.notes}</div></div>` : ''}
+    <div class="section-header">
+      <div class="section-title">Analysis Entries (${analyses.length})</div>
+      <button class="btn btn-primary" onclick="window.openAddAnalysis('${pair.id}')">+ Add Analysis</button>
+    </div>
+    <div id="pair-analyses-list">${analyses.length === 0 ? emptyAnalysis() : ''}</div>
+  `;
+  analyses.forEach(a => document.getElementById('pair-analyses-list').appendChild(buildAnalysisCard(a)));
+  renderSidebarPairs();
+}
+
+function emptyAnalysis() {
+  return `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg><h3>No analyses yet</h3><p>Record your first analysis for this pair.</p></div>`;
+}
+
+// ═══════════════════════════════════════════════════════
+// ANALYSIS CARD
+// ═══════════════════════════════════════════════════════
+function buildAnalysisCard(a) {
+  const pair = state.pairs.find(p => p.id === a.pairId);
+  const rb = { Win:'badge-win', Loss:'badge-loss', Pending:'badge-pending', Breakeven:'badge-be' }[a.result] || 'badge-neu-full';
+  const bb = a.bias === 'Bullish' ? 'badge-bull-full' : a.bias === 'Bearish' ? 'badge-bear-full' : 'badge-neu-full';
+  const div = document.createElement('div');
+  div.className = 'analysis-card';
+  let rr = '';
+  if (a.entry && a.sl && a.tp) {
+    const rrVal = Math.abs((parseFloat(a.tp) - parseFloat(a.entry)) / (parseFloat(a.entry) - parseFloat(a.sl)));
+    if (!isNaN(rrVal) && isFinite(rrVal)) rr = `<div class="analysis-field"><div class="analysis-field-label">RR Ratio</div><div class="analysis-field-value" style="color:var(--yellow)">1:${rrVal.toFixed(2)}</div></div>`;
+  }
+  div.innerHTML = `
+    <div class="analysis-header">
+      <div>
+        <div class="analysis-date">${formatDate(a.date)}</div>
+        <div class="analysis-symbol">${pair ? pair.symbol : 'Unknown'}</div>
+        <div class="analysis-badges">
+          <span class="badge ${bb}">${a.bias}</span>
+          <span class="badge ${rb}">${a.result}</span>
+          ${a.setup ? `<span class="badge badge-neu-full">${a.setup}</span>` : ''}
+          ${a.timeframe ? `<span class="badge badge-neu-full">${a.timeframe}</span>` : ''}
+          ${a.session ? `<span class="badge badge-neu-full">${a.session}</span>` : ''}
+        </div>
+      </div>
+    </div>
+    <div class="analysis-grid">
+      ${a.entry ? `<div class="analysis-field"><div class="analysis-field-label">Entry</div><div class="analysis-field-value">${a.entry}</div></div>` : ''}
+      ${a.sl ? `<div class="analysis-field"><div class="analysis-field-label">Stop Loss</div><div class="analysis-field-value" style="color:var(--red)">${a.sl}</div></div>` : ''}
+      ${a.tp ? `<div class="analysis-field"><div class="analysis-field-label">Take Profit</div><div class="analysis-field-value" style="color:var(--accent)">${a.tp}</div></div>` : ''}
+      ${rr}
+    </div>
+    ${a.notes ? `<div class="analysis-notes">${a.notes}</div>` : ''}
+    ${a.screenshots && a.screenshots.length > 0 ? `<div class="analysis-screenshots">${a.screenshots.map((src, i) => `<img class="screenshot-thumb" src="${src}" onclick="window.openLightbox('${a.id}',${i})">`).join('')}</div>` : ''}
+    <div class="analysis-actions">
+      <button class="btn" onclick="window.editAnalysis('${a.id}')">Edit</button>
+      <button class="btn btn-danger" onclick="window.deleteAnalysis('${a.id}')">Delete</button>
+    </div>
+  `;
+  return div;
+}
+
+// ═══════════════════════════════════════════════════════
+// LOG
+// ═══════════════════════════════════════════════════════
+window.setFilter = function(el, filter) {
+  logFilter = filter;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderLog();
+};
+
+function populatePairFilter() {
+  const sel = document.getElementById('log-pair-filter');
+  sel.innerHTML = '<option value="">All Pairs</option>' + state.pairs.map(p => `<option value="${p.id}">${p.symbol}</option>`).join('');
+}
+
+function renderLog() {
+  const search = document.getElementById('log-search').value.toLowerCase();
+  const pairFilter = document.getElementById('log-pair-filter').value;
+  let analyses = [...state.analyses].sort((a, b) => new Date(b.date) - new Date(a.date));
+  if (logFilter !== 'all') analyses = analyses.filter(a => a.bias === logFilter || a.result === logFilter);
+  if (pairFilter) analyses = analyses.filter(a => a.pairId === pairFilter);
+  if (search) analyses = analyses.filter(a => {
+    const pair = state.pairs.find(p => p.id === a.pairId);
+    return (pair && pair.symbol.toLowerCase().includes(search)) || (a.notes && a.notes.toLowerCase().includes(search)) || (a.setup && a.setup.toLowerCase().includes(search));
+  });
+  const container = document.getElementById('log-list');
+  container.innerHTML = '';
+  if (analyses.length === 0) {
+    container.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><h3>No entries found</h3><p>Try adjusting filters or add a new analysis.</p></div>`;
+    return;
+  }
+  analyses.forEach(a => container.appendChild(buildAnalysisCard(a)));
+}
+
+// ═══════════════════════════════════════════════════════
+// PAIRS PAGE
+// ═══════════════════════════════════════════════════════
+function renderPairsPage() { renderPairsGrid(document.getElementById('all-pairs-grid')); }
+
+// ═══════════════════════════════════════════════════════
+// PAIR MODAL
+// ═══════════════════════════════════════════════════════
+window.openAddPair = function() {
+  ['pair-edit-id','pair-symbol','pair-tv-url','pair-notes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('pair-modal-title').textContent = 'Add Pair';
+  document.getElementById('pair-category').value = 'Forex Major';
+  document.getElementById('pair-htf-bias').value = '';
+  document.getElementById('pair-session').value = '';
+  document.getElementById('pair-modal').style.display = 'flex';
+};
+
+window.editPair = function(id) {
+  const pair = state.pairs.find(p => p.id === id); if (!pair) return;
+  document.getElementById('pair-edit-id').value = id;
+  document.getElementById('pair-modal-title').textContent = 'Edit Pair';
+  document.getElementById('pair-symbol').value = pair.symbol;
+  document.getElementById('pair-category').value = pair.category;
+  document.getElementById('pair-htf-bias').value = pair.htfBias || '';
+  document.getElementById('pair-session').value = pair.session || '';
+  document.getElementById('pair-tv-url').value = pair.tvUrl || '';
+  document.getElementById('pair-notes').value = pair.notes || '';
+  document.getElementById('pair-modal').style.display = 'flex';
+};
+
+window.closePairModal = function() { document.getElementById('pair-modal').style.display = 'none'; };
+
+window.savePair = function() {
+  const symbol = document.getElementById('pair-symbol').value.trim().toUpperCase();
+  if (!symbol) return showToast('Enter a symbol', 'error');
+  const editId = document.getElementById('pair-edit-id').value;
+  const data = { symbol, category: document.getElementById('pair-category').value, htfBias: document.getElementById('pair-htf-bias').value, session: document.getElementById('pair-session').value, tvUrl: document.getElementById('pair-tv-url').value.trim(), notes: document.getElementById('pair-notes').value.trim() };
+  if (editId) {
+    const idx = state.pairs.findIndex(p => p.id === editId);
+    if (idx > -1) state.pairs[idx] = { ...state.pairs[idx], ...data };
+    showToast(`${symbol} updated`);
+  } else {
+    state.pairs.push({ id: 'p_' + Date.now(), createdAt: Date.now(), ...data });
+    showToast(`${symbol} added`);
+  }
+  saveState(); window.closePairModal(); renderSidebarPairs();
+  if (currentPage === 'overview') renderOverview();
+  else if (currentPage === 'pairs') renderPairsPage();
+  else if (currentPage === 'pair-detail' && currentPairForDetail && currentPairForDetail.id === editId) { currentPairForDetail = state.pairs.find(p => p.id === editId); renderPairDetail(currentPairForDetail); }
+};
+
+window.deletePair = function(id) {
+  if (!confirm('Delete this pair and all its analyses?')) return;
+  state.pairs = state.pairs.filter(p => p.id !== id);
+  state.analyses = state.analyses.filter(a => a.pairId !== id);
+  saveState(); renderSidebarPairs(); window.navigate('overview'); showToast('Pair deleted');
+};
+
+// ═══════════════════════════════════════════════════════
+// ANALYSIS MODAL
+// ═══════════════════════════════════════════════════════
+window.openAddAnalysis = function(pairId) {
+  pendingScreenshots = []; document.getElementById('screenshots-preview').innerHTML = '';
+  document.getElementById('analysis-edit-id').value = '';
+  document.getElementById('analysis-modal-title').textContent = 'New Analysis';
+  const pairSel = document.getElementById('analysis-pair');
+  pairSel.innerHTML = state.pairs.map(p => `<option value="${p.id}">${p.symbol}</option>`).join('');
+  if (pairId) pairSel.value = pairId;
+  document.getElementById('analysis-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('analysis-bias').value = 'Bullish';
+  document.getElementById('analysis-tf').value = 'HTF (D1/W1)';
+  document.getElementById('analysis-session').value = 'London';
+  ['analysis-entry','analysis-sl','analysis-tp','analysis-notes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('analysis-setup').value = '';
+  document.getElementById('analysis-result').value = 'Pending';
+  document.getElementById('analysis-modal').style.display = 'flex';
+};
+
+window.editAnalysis = function(id) {
+  const a = state.analyses.find(x => x.id === id); if (!a) return;
+  pendingScreenshots = [...(a.screenshots || [])];
+  document.getElementById('analysis-edit-id').value = id;
+  document.getElementById('analysis-modal-title').textContent = 'Edit Analysis';
+  const pairSel = document.getElementById('analysis-pair');
+  pairSel.innerHTML = state.pairs.map(p => `<option value="${p.id}">${p.symbol}</option>`).join('');
+  pairSel.value = a.pairId;
+  document.getElementById('analysis-date').value = a.date;
+  document.getElementById('analysis-bias').value = a.bias;
+  document.getElementById('analysis-tf').value = a.timeframe || 'HTF (D1/W1)';
+  document.getElementById('analysis-session').value = a.session || 'London';
+  document.getElementById('analysis-entry').value = a.entry || '';
+  document.getElementById('analysis-sl').value = a.sl || '';
+  document.getElementById('analysis-tp').value = a.tp || '';
+  document.getElementById('analysis-setup').value = a.setup || '';
+  document.getElementById('analysis-result').value = a.result || 'Pending';
+  document.getElementById('analysis-notes').value = a.notes || '';
+  renderPendingScreenshots();
+  document.getElementById('analysis-modal').style.display = 'flex';
+};
+
+window.closeAnalysisModal = function() { document.getElementById('analysis-modal').style.display = 'none'; pendingScreenshots = []; };
+
+window.saveAnalysis = function() {
+  const pairId = document.getElementById('analysis-pair').value;
+  const date = document.getElementById('analysis-date').value;
+  if (!pairId || !date) return showToast('Select pair and date', 'error');
+  const editId = document.getElementById('analysis-edit-id').value;
+  const data = { pairId, date, bias: document.getElementById('analysis-bias').value, timeframe: document.getElementById('analysis-tf').value, session: document.getElementById('analysis-session').value, entry: document.getElementById('analysis-entry').value, sl: document.getElementById('analysis-sl').value, tp: document.getElementById('analysis-tp').value, setup: document.getElementById('analysis-setup').value, result: document.getElementById('analysis-result').value, notes: document.getElementById('analysis-notes').value.trim(), screenshots: [...pendingScreenshots] };
+  if (editId) {
+    const idx = state.analyses.findIndex(a => a.id === editId);
+    if (idx > -1) state.analyses[idx] = { ...state.analyses[idx], ...data };
+    showToast('Analysis updated');
+  } else {
+    state.analyses.push({ id: 'a_' + Date.now(), createdAt: Date.now(), ...data });
+    showToast('Analysis saved');
+  }
+  saveState(); window.closeAnalysisModal();
+  if (currentPage === 'overview') renderOverview();
+  else if (currentPage === 'log') renderLog();
+  else if (currentPage === 'pair-detail' && currentPairForDetail) renderPairDetail(currentPairForDetail);
+  renderSidebarPairs();
+};
+
+window.deleteAnalysis = function(id) {
+  if (!confirm('Delete this analysis?')) return;
+  state.analyses = state.analyses.filter(a => a.id !== id);
+  saveState(); showToast('Analysis deleted');
+  if (currentPage === 'overview') renderOverview();
+  else if (currentPage === 'log') renderLog();
+  else if (currentPage === 'pair-detail' && currentPairForDetail) renderPairDetail(currentPairForDetail);
+  renderSidebarPairs();
+};
+
+// ═══════════════════════════════════════════════════════
+// ADMIN PANEL
+// ═══════════════════════════════════════════════════════
+async function renderAdminPanel() {
+  const tbody = document.getElementById('user-table-body');
+  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:24px">Loading users...</td></tr>';
+  try {
+    const snapshot = await getDocs(collection(db, 'users'));
+    tbody.innerHTML = '';
+    snapshot.forEach(docSnap => {
+      const u = docSnap.data();
+      const uid = docSnap.id;
+      const isCurrentUser = uid === currentUser.uid;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>
+          <div style="font-weight:500;color:var(--text-primary)">${u.fullname || '—'}</div>
+        </td>
+        <td style="font-size:12px;color:var(--text-muted)">${u.email || '—'}</td>
+        <td><span class="user-role-badge ${u.role === 'admin' ? 'role-admin' : 'role-user'}">${(u.role || 'user').toUpperCase()}</span></td>
+        <td style="color:var(--text-muted);font-size:12px">${u.createdAt || '—'}</td>
+        <td>
+          <div style="display:flex;gap:6px">
+            ${!isCurrentUser ? `<button class="btn btn-danger" style="padding:5px 10px;font-size:11px" onclick="window.deleteUserAccount('${uid}','${u.email}')">Remove</button>` : '<span style="font-size:11px;color:var(--text-muted)">You</span>'}
+          </div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch(e) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--red);padding:24px">Error loading users.</td></tr>';
+  }
+}
+
+window.openAddUser = function() {
+  document.getElementById('user-fullname').value = '';
+  document.getElementById('user-email').value = '';
+  document.getElementById('user-password').value = '';
+  document.getElementById('user-role').value = 'user';
+  document.getElementById('user-modal').style.display = 'flex';
+};
+
+window.closeUserModal = function() { document.getElementById('user-modal').style.display = 'none'; };
+
+window.saveUser = async function() {
+  const fullname = document.getElementById('user-fullname').value.trim();
+  const email = document.getElementById('user-email').value.trim();
+  const password = document.getElementById('user-password').value;
+  const role = document.getElementById('user-role').value;
+
+  if (!email || !password) return showToast('Email and password required', 'error');
+  if (password.length < 6) return showToast('Password must be at least 6 characters', 'error');
+
+  const btn = document.getElementById('create-user-btn');
+  btn.textContent = 'Creating...'; btn.disabled = true;
+
+  try {
+    // Create user in Firebase Auth using a secondary app instance to avoid signing out admin
+    const secondaryApp = initializeApp(firebaseConfig, 'Secondary');
+    const secondaryAuth = getAuth(secondaryApp);
+    const userCred = await createUserWithEmailAndPassword(secondaryAuth, email, password);
+    const newUid = userCred.user.uid;
+    await signOut(secondaryAuth);
+
+    // Save profile in Firestore
+    await setDoc(doc(db, 'users', newUid), {
+      fullname: fullname || email.split('@')[0],
+      email,
+      role,
+      createdAt: new Date().toISOString().split('T')[0]
+    });
+
+    // Seed default pairs for new user
+    const newState = { pairs: DEFAULT_PAIRS.map(p => ({ ...p, id: p.id + '_' + newUid })), analyses: [] };
+    await setDoc(doc(db, 'userdata', newUid), newState);
+
+    showToast(`User ${email} created successfully!`);
+    window.closeUserModal();
+    renderAdminPanel();
+  } catch(e) {
+    if (e.code === 'auth/email-already-in-use') showToast('Email already in use', 'error');
+    else showToast('Error creating user: ' + e.message, 'error');
+  }
+  btn.textContent = 'Create User'; btn.disabled = false;
+};
+
+window.deleteUserAccount = async function(uid, email) {
+  if (!confirm(`Remove user ${email}? Their data will be deleted.`)) return;
+  try {
+    await deleteDoc(doc(db, 'users', uid));
+    await deleteDoc(doc(db, 'userdata', uid));
+    showToast('User removed');
+    renderAdminPanel();
+  } catch(e) {
+    showToast('Error removing user', 'error');
+  }
+};
+
+// ═══════════════════════════════════════════════════════
+// SCREENSHOTS
+// ═══════════════════════════════════════════════════════
+window.handleScreenshots = function(input) {
+  Array.from(input.files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => { pendingScreenshots.push(e.target.result); renderPendingScreenshots(); };
+    reader.readAsDataURL(file);
+  });
+  input.value = '';
+};
+
+function renderPendingScreenshots() {
+  const c = document.getElementById('screenshots-preview'); c.innerHTML = '';
+  pendingScreenshots.forEach((src, i) => {
+    const div = document.createElement('div'); div.className = 'ss-preview-item';
+    div.innerHTML = `<img src="${src}" alt="Screenshot ${i + 1}"><button class="ss-remove" onclick="window.removeScreenshot(${i})">×</button>`;
+    c.appendChild(div);
+  });
+}
+
+window.removeScreenshot = function(i) { pendingScreenshots.splice(i, 1); renderPendingScreenshots(); };
+
+// ═══════════════════════════════════════════════════════
+// LIGHTBOX
+// ═══════════════════════════════════════════════════════
+window.openLightbox = function(analysisId, idx) {
+  const a = state.analyses.find(x => x.id === analysisId);
+  if (!a || !a.screenshots || !a.screenshots[idx]) return;
+  document.getElementById('lightbox-img').src = a.screenshots[idx];
+  document.getElementById('lightbox').style.display = 'flex';
+};
+window.closeLightbox = function() { document.getElementById('lightbox').style.display = 'none'; };
+
+// ═══════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════
+let toastTimer;
+function showToast(msg, type = 'success') {
+  const toast = document.getElementById('toast');
+  toast.className = `toast ${type}`;
+  document.getElementById('toast-msg').textContent = msg;
+  toast.style.display = 'flex';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.style.display = 'none', 3000);
+}
+
+// ═══════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════
+function formatDate(ds) {
+  if (!ds) return '';
+  return new Date(ds + 'T00:00:00').toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+}
+
+// Close modals on overlay click
+['pair-modal','analysis-modal','user-modal'].forEach(id => {
+  document.getElementById(id).addEventListener('click', function(e) { if (e.target === this) this.style.display = 'none'; });
+});
+
+</script>
+</body>
+</html>
