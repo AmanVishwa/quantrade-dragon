@@ -1095,6 +1095,17 @@ window.openAddPair = function() {
   document.getElementById('pair-session').value = '';
   document.getElementById('pair-modal').style.display = 'flex';
 };
+document.getElementById('pair-symbol').addEventListener('input', function() {
+  const sym = this.value.trim().toUpperCase();
+  const tvUrl = document.getElementById('pair-tv-url');
+  if (!tvUrl.dataset.manuallyEdited) {
+    tvUrl.value = sym ? `https://www.tradingview.com/chart/?symbol=${sym}` : '';
+  }
+});
+
+document.getElementById('pair-tv-url').addEventListener('input', function() {
+  this.dataset.manuallyEdited = 'true';
+});  
 
 window.editPair = function(id) {
   const pair = state.pairs.find(p => p.id === id); if (!pair) return;
