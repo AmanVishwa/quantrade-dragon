@@ -19,6 +19,8 @@
     --yellow: #f5a623;
     --blue: #4d9fff;
     --blue-dim: #4d9fff22;
+    --purple: #9b7fe8;
+    --purple-dim: #9b7fe822;
     --text-primary: #e8eaf0;
     --text-secondary: #8b8fa8;
     --text-muted: #555a6e;
@@ -30,129 +32,70 @@
   * { margin:0; padding:0; box-sizing:border-box; }
   body { background:var(--bg-primary); color:var(--text-primary); font-family:var(--font-sans); font-size:14px; min-height:100vh; }
 
-  /* ── LOADING SCREEN ── */
-  #loading-screen {
-    min-height:100vh; display:flex; align-items:center; justify-content:center;
-    background:var(--bg-primary); flex-direction:column; gap:16px;
-  }
-  .spinner {
-    width:36px; height:36px; border:3px solid var(--border);
-    border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite;
-  }
+  /* LOADING */
+  #loading-screen { min-height:100vh; display:flex; align-items:center; justify-content:center; background:var(--bg-primary); flex-direction:column; gap:16px; }
+  .spinner { width:36px; height:36px; border:3px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite; }
   @keyframes spin { to { transform:rotate(360deg); } }
 
-  /* ── LOGIN SCREEN ── */
-  #login-screen {
-    min-height:100vh; display:flex; align-items:center; justify-content:center;
-    background: var(--bg-primary);
-  }
-  .login-box {
-    width:100%; max-width:380px;
-    background:var(--bg-secondary);
-    border:1px solid var(--border);
-    border-radius:16px;
-    padding:36px 32px;
-  }
+  /* LOGIN */
+  #login-screen { min-height:100vh; display:flex; align-items:center; justify-content:center; background:var(--bg-primary); }
+  .login-box { width:100%; max-width:380px; background:var(--bg-secondary); border:1px solid var(--border); border-radius:16px; padding:36px 32px; }
   .login-brand { text-align:center; margin-bottom:32px; }
   .login-brand .mark { font-family:var(--font-mono); font-size:10px; color:var(--accent); letter-spacing:3px; }
   .login-brand h1 { font-size:20px; font-weight:600; margin-top:6px; }
   .login-brand p { font-size:12px; color:var(--text-muted); margin-top:4px; }
-  .login-error {
-    background:var(--red-dim); border:1px solid #ff4d4d44; border-radius:6px;
-    padding:10px 14px; color:var(--red); font-size:12px; margin-bottom:16px; display:none;
-  }
-  .forgot-link {
-    display:block; text-align:right; font-size:11px; color:var(--accent);
-    cursor:pointer; margin-top:6px; text-decoration:none;
-  }
+  .login-error { background:var(--red-dim); border:1px solid #ff4d4d44; border-radius:6px; padding:10px 14px; color:var(--red); font-size:12px; margin-bottom:16px; display:none; }
+  .forgot-link { display:block; text-align:right; font-size:11px; color:var(--accent); cursor:pointer; margin-top:6px; }
   .forgot-link:hover { text-decoration:underline; }
 
-  /* ── APP SHELL ── */
+  /* APP */
   #app { display:none; }
 
-  /* ── SIDEBAR ── */
-  #sidebar {
-    position:fixed; left:0; top:0; bottom:0; width:224px;
-    background:var(--bg-secondary); border-right:1px solid var(--border);
-    display:flex; flex-direction:column; z-index:100;
-    transition:transform 0.3s ease;
-  }
+  /* SIDEBAR */
+  #sidebar { position:fixed; left:0; top:0; bottom:0; width:224px; background:var(--bg-secondary); border-right:1px solid var(--border); display:flex; flex-direction:column; z-index:100; transition:transform 0.3s ease; }
   .sidebar-logo { padding:20px 18px 16px; border-bottom:1px solid var(--border); }
   .sidebar-logo .logo-mark { font-family:var(--font-mono); font-size:10px; color:var(--accent); letter-spacing:3px; }
   .sidebar-logo .logo-title { font-size:15px; font-weight:600; margin-top:4px; }
-  .sidebar-user {
-    padding:12px 18px; border-bottom:1px solid var(--border);
-    display:flex; align-items:center; gap:10px;
-  }
-  .user-avatar {
-    width:32px; height:32px; border-radius:50%;
-    background:var(--accent-dim); border:1px solid var(--border-accent);
-    display:flex; align-items:center; justify-content:center;
-    font-family:var(--font-mono); font-size:11px; font-weight:600; color:var(--accent);
-    flex-shrink:0;
-  }
+  .sidebar-user { padding:12px 18px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+  .user-avatar { width:32px; height:32px; border-radius:50%; background:var(--accent-dim); border:1px solid var(--border-accent); display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:11px; font-weight:600; color:var(--accent); flex-shrink:0; }
   .user-info { flex:1; min-width:0; }
   .user-name { font-size:12px; font-weight:500; color:var(--text-primary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .user-uid { font-family:var(--font-mono); font-size:9px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .user-role-badge { font-size:8px; padding:2px 6px; border-radius:3px; font-family:var(--font-mono); font-weight:600; letter-spacing:0.5px; }
   .role-admin { background:#f5a62322; color:var(--yellow); border:1px solid #f5a62344; }
   .role-user { background:var(--accent-dim); color:var(--accent); border:1px solid var(--border-accent); }
-
   .sidebar-section-label { font-family:var(--font-mono); font-size:9px; letter-spacing:2px; color:var(--text-muted); text-transform:uppercase; padding:16px 18px 8px; }
-  .nav-item {
-    display:flex; align-items:center; gap:10px; padding:9px 18px;
-    cursor:pointer; color:var(--text-secondary); font-size:13px;
-    transition:all 0.15s; border-left:2px solid transparent; user-select:none;
-  }
+  .nav-item { display:flex; align-items:center; gap:10px; padding:9px 18px; cursor:pointer; color:var(--text-secondary); font-size:13px; transition:all 0.15s; border-left:2px solid transparent; user-select:none; }
   .nav-item:hover { background:var(--bg-hover); color:var(--text-primary); }
   .nav-item.active { color:var(--accent); border-left-color:var(--accent); background:var(--accent-dim); }
   .nav-item svg { width:15px; height:15px; flex-shrink:0; }
   .nav-item.admin-only { display:none; }
   body.is-admin .nav-item.admin-only { display:flex; }
-
   .pairs-list { flex:1; overflow-y:auto; padding-bottom:8px; }
   .pairs-list::-webkit-scrollbar { width:3px; }
   .pairs-list::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
-  .pair-nav-item {
-    display:flex; align-items:center; justify-content:space-between;
-    padding:8px 18px; cursor:pointer; color:var(--text-secondary);
-    font-family:var(--font-mono); font-size:12px; transition:all 0.15s;
-    border-left:2px solid transparent;
-  }
+  .pair-nav-item { display:flex; align-items:center; justify-content:space-between; padding:8px 18px; cursor:pointer; color:var(--text-secondary); font-family:var(--font-mono); font-size:12px; transition:all 0.15s; border-left:2px solid transparent; }
   .pair-nav-item:hover { background:var(--bg-hover); color:var(--text-primary); }
   .pair-nav-item.active { color:var(--accent); border-left-color:var(--accent); background:var(--accent-dim); }
   .pair-badge { font-size:9px; padding:2px 6px; border-radius:3px; font-family:var(--font-mono); font-weight:500; }
   .badge-bull { background:#00d4aa22; color:var(--accent); }
   .badge-bear { background:#ff4d4d22; color:var(--red); }
   .badge-neu { background:#555a6e33; color:var(--text-muted); }
-
   .sidebar-footer { padding:12px 18px; border-top:1px solid var(--border); display:flex; flex-direction:column; gap:8px; }
-  .add-pair-btn {
-    width:100%; padding:8px; background:var(--accent-dim); border:1px solid var(--border-accent);
-    border-radius:6px; color:var(--accent); font-family:var(--font-mono); font-size:11px;
-    cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:all 0.2s;
-  }
+  .add-pair-btn { width:100%; padding:8px; background:var(--accent-dim); border:1px solid var(--border-accent); border-radius:6px; color:var(--accent); font-family:var(--font-mono); font-size:11px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:all 0.2s; }
   .add-pair-btn:hover { background:var(--accent); color:#000; }
-  .logout-btn {
-    width:100%; padding:7px; background:transparent; border:1px solid var(--border);
-    border-radius:6px; color:var(--text-muted); font-family:var(--font-mono); font-size:10px;
-    cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:all 0.15s;
-  }
+  .logout-btn { width:100%; padding:7px; background:transparent; border:1px solid var(--border); border-radius:6px; color:var(--text-muted); font-family:var(--font-mono); font-size:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:all 0.15s; }
   .logout-btn:hover { border-color:var(--red); color:var(--red); }
 
-  /* ── MAIN ── */
+  /* MAIN */
   #main { margin-left:224px; min-height:100vh; display:flex; flex-direction:column; }
-  .topbar {
-    height:56px; background:var(--bg-secondary); border-bottom:1px solid var(--border);
-    display:flex; align-items:center; justify-content:space-between;
-    padding:0 28px; position:sticky; top:0; z-index:50;
-  }
+  .topbar { height:56px; background:var(--bg-secondary); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 28px; position:sticky; top:0; z-index:50; }
   .topbar-left { display:flex; align-items:center; gap:12px; }
   .topbar-title { font-size:16px; font-weight:600; }
   .topbar-sub { font-family:var(--font-mono); font-size:11px; color:var(--text-muted); }
-  .topbar-right { display:flex; align-items:center; gap:12px; }
+  .topbar-right { display:flex; align-items:center; gap:10px; }
   .hamburger { display:none; background:none; border:none; color:var(--text-secondary); cursor:pointer; padding:4px; }
-  @media(max-width:768px){ .hamburger{display:block;} #sidebar{transform:translateX(-100%);width:240px;} #sidebar.open{transform:translateX(0);} #main{margin-left:0;} .form-row,.form-row-3{grid-template-columns:1fr;} .topbar{padding:0 16px;} #content{padding:16px;} }
+  @media(max-width:768px){ .hamburger{display:block;} #sidebar{transform:translateX(-100%);width:240px;} #sidebar.open{transform:translateX(0);} #main{margin-left:0;} .form-row,.form-row-3{grid-template-columns:1fr;} .topbar{padding:0 16px;} #content{padding:16px;} .goals-grid{grid-template-columns:1fr;} .xp-banner{flex-wrap:wrap;} }
 
   .btn { padding:7px 16px; border-radius:6px; border:1px solid var(--border); background:transparent; color:var(--text-secondary); font-size:12px; font-family:var(--font-sans); cursor:pointer; transition:all 0.15s; display:inline-flex; align-items:center; gap:6px; }
   .btn:hover { border-color:var(--text-muted); color:var(--text-primary); }
@@ -162,23 +105,28 @@
   .btn-danger:hover { background:var(--red-dim); }
   .btn-gold { border-color:#f5a62344; color:var(--yellow); }
   .btn-gold:hover { background:#f5a62322; }
+  .btn-export { border-color:#4d9fff44; color:var(--blue); font-family:var(--font-mono); font-size:11px; }
+  .btn-export:hover { background:var(--blue-dim); }
 
   #content { padding:28px; flex:1; }
 
-  /* ── STAT CARDS ── */
-  .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-bottom:28px; }
+  /* STATS */
+  .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-bottom:20px; }
   .stat-card { background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:16px 18px; }
   .stat-label { font-family:var(--font-mono); font-size:10px; letter-spacing:1.5px; color:var(--text-muted); text-transform:uppercase; margin-bottom:8px; }
   .stat-value { font-family:var(--font-mono); font-size:26px; font-weight:600; color:var(--text-primary); line-height:1; }
-  .stat-value.green{color:var(--accent);} .stat-value.red{color:var(--red);} .stat-value.gold{color:var(--yellow);}
+  .stat-value.green{color:var(--accent);} .stat-value.red{color:var(--red);} .stat-value.gold{color:var(--yellow);} .stat-value.purple{color:var(--purple);}
   .stat-sub { font-size:11px; color:var(--text-muted); margin-top:4px; }
+  .winrate-bar { height:6px; background:var(--bg-hover); border-radius:3px; margin-top:6px; overflow:hidden; }
+  .winrate-fill { height:100%; background:var(--accent); border-radius:3px; transition:width 0.5s ease; }
+  .winrate-fill.red { background:var(--red); }
 
-  /* ── SECTION HEADER ── */
+  /* SECTION HEADER */
   .section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
   .section-title { font-size:13px; font-weight:600; color:var(--text-primary); display:flex; align-items:center; gap:8px; }
   .section-title::before { content:''; display:inline-block; width:3px; height:14px; background:var(--accent); border-radius:2px; }
 
-  /* ── PAIRS GRID ── */
+  /* PAIRS GRID */
   .pairs-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; }
   .pair-card { background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:16px; cursor:pointer; transition:all 0.2s; position:relative; overflow:hidden; }
   .pair-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--border); transition:background 0.2s; }
@@ -200,7 +148,7 @@
   .tv-link { display:inline-flex; align-items:center; gap:4px; font-size:10px; font-family:var(--font-mono); color:var(--blue); text-decoration:none; padding:3px 8px; border-radius:4px; border:1px solid var(--blue-dim); background:var(--blue-dim); transition:all 0.15s; margin-top:8px; }
   .tv-link:hover { background:var(--blue); color:#fff; }
 
-  /* ── ANALYSIS CARDS ── */
+  /* ANALYSIS CARDS */
   .analysis-card { background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:20px; margin-bottom:14px; transition:border-color 0.2s; }
   .analysis-card:hover { border-color:var(--text-muted); }
   .analysis-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:12px; }
@@ -219,14 +167,19 @@
   .analysis-field-label { font-size:9px; font-family:var(--font-mono); color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:3px; }
   .analysis-field-value { font-family:var(--font-mono); font-size:12px; }
   .analysis-notes { font-size:13px; color:var(--text-secondary); line-height:1.6; border-top:1px solid var(--border); padding-top:12px; margin-top:12px; }
+  .analysis-lesson { font-size:12px; color:var(--blue); line-height:1.5; margin-top:8px; padding:8px 12px; background:var(--blue-dim); border-radius:6px; border-left:2px solid var(--blue); }
   .analysis-screenshots { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
   .screenshot-thumb { width:80px; height:60px; object-fit:cover; border-radius:6px; border:1px solid var(--border); cursor:pointer; transition:border-color 0.15s; }
   .screenshot-thumb:hover { border-color:var(--accent); }
   .analysis-actions { display:flex; gap:8px; margin-top:14px; border-top:1px solid var(--border); padding-top:14px; }
+  .mistake-chips { display:flex; gap:5px; flex-wrap:wrap; margin-top:8px; }
+  .mistake-chip { font-size:9px; padding:2px 8px; border-radius:3px; font-family:var(--font-mono); background:var(--red-dim); color:var(--red); border:1px solid #ff4d4d33; }
+  .conf-display { display:flex; gap:2px; margin-top:4px; }
+  .conf-star-display { font-size:12px; }
 
-  /* ── MODALS ── */
+  /* MODALS */
   .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.75); display:flex; align-items:center; justify-content:center; z-index:1000; padding:20px; }
-  .modal { background:var(--bg-secondary); border:1px solid var(--border); border-radius:14px; width:100%; max-width:620px; max-height:90vh; overflow-y:auto; }
+  .modal { background:var(--bg-secondary); border:1px solid var(--border); border-radius:14px; width:100%; max-width:640px; max-height:90vh; overflow-y:auto; }
   .modal::-webkit-scrollbar{width:4px;} .modal::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
   .modal-header { padding:20px 24px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; background:var(--bg-secondary); z-index:1; }
   .modal-title { font-size:15px; font-weight:600; font-family:var(--font-mono); }
@@ -234,7 +187,6 @@
   .modal-close:hover { background:var(--bg-hover); color:var(--text-primary); }
   .modal-body { padding:20px 24px; }
   .modal-footer { padding:16px 24px 20px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:10px; }
-
   .form-group { margin-bottom:16px; }
   .form-label { display:block; font-size:11px; font-family:var(--font-mono); color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; }
   .form-control { width:100%; padding:9px 12px; background:var(--bg-primary); border:1px solid var(--border); border-radius:6px; color:var(--text-primary); font-family:var(--font-sans); font-size:13px; transition:border-color 0.15s; outline:none; }
@@ -245,32 +197,83 @@
   .form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
   .form-row-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
 
-  /* ── ADMIN PANEL ── */
+  /* GAMIFICATION */
+  .xp-banner { background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:16px 20px; margin-bottom:16px; display:flex; align-items:center; gap:16px; }
+  .xp-avatar { width:52px; height:52px; border-radius:50%; background:#9b7fe822; border:1px solid #9b7fe844; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:600; color:var(--purple); flex-shrink:0; font-family:var(--font-mono); }
+  .xp-info { flex:1; }
+  .xp-level { font-family:var(--font-mono); font-size:13px; font-weight:600; color:var(--text-primary); margin-bottom:6px; }
+  .xp-bar-bg { height:7px; background:var(--bg-hover); border-radius:4px; overflow:hidden; border:1px solid var(--border); }
+  .xp-bar-fill { height:100%; background:var(--purple); border-radius:4px; transition:width 1s ease; }
+  .xp-sub { font-family:var(--font-mono); font-size:10px; color:var(--text-muted); margin-top:4px; }
+  .xp-rank { flex-shrink:0; text-align:right; }
+  .xp-rank-label { font-size:10px; color:var(--text-muted); font-family:var(--font-mono); }
+  .xp-rank-val { font-family:var(--font-mono); font-size:18px; font-weight:600; color:var(--purple); }
+
+  .trophy-shelf { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; align-items:center; }
+  .trophy-shelf-label { font-family:var(--font-mono); font-size:10px; color:var(--text-muted); letter-spacing:1px; }
+  .trophy-badge { padding:4px 10px; border-radius:20px; font-size:11px; font-family:var(--font-mono); border:1px solid var(--border); color:var(--text-muted); background:var(--bg-card); }
+  .trophy-badge.earned { background:#f5a62318; border-color:#f5a62344; color:var(--yellow); }
+
+  .streak-banner { background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:16px 20px; display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:12px; }
+  .streak-left {}
+  .streak-num { font-family:var(--font-mono); font-size:36px; font-weight:600; color:var(--yellow); line-height:1; }
+  .streak-lbl { font-size:11px; color:var(--text-muted); margin-top:4px; font-family:var(--font-mono); }
+  .streak-dots { display:flex; gap:6px; }
+  .s-dot { width:28px; height:28px; border-radius:50%; background:var(--bg-hover); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:10px; color:var(--text-muted); }
+  .s-dot.done { background:#f5a62320; border-color:#f5a62355; color:var(--yellow); }
+
+  .goals-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin-bottom:16px; }
+  .goal-card { background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:16px; display:flex; align-items:center; gap:14px; }
+  .goal-text-main { font-size:13px; color:var(--text-primary); font-weight:500; }
+  .goal-text-sub { font-size:11px; color:var(--text-muted); margin-top:3px; font-family:var(--font-mono); }
+  .goal-text-achieved { font-size:11px; color:var(--accent); margin-top:3px; font-family:var(--font-mono); }
+
+  /* CONFIDENCE STARS */
+  .confidence-row { display:flex; gap:4px; align-items:center; }
+  .conf-star { font-size:22px; cursor:pointer; color:var(--text-muted); transition:color 0.1s, transform 0.1s; user-select:none; }
+  .conf-star.lit { color:var(--yellow); }
+  .conf-star:hover { transform:scale(1.15); }
+
+  /* MISTAKE TAGS */
+  .mistake-tags-wrap { display:flex; gap:6px; flex-wrap:wrap; }
+  .m-tag { padding:5px 12px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--text-muted); font-size:11px; font-family:var(--font-mono); cursor:pointer; transition:all 0.15s; }
+  .m-tag:hover { border-color:var(--text-muted); color:var(--text-primary); }
+  .m-tag.active { background:var(--red-dim); border-color:#ff4d4d44; color:var(--red); }
+
+  /* RULE CHECKLIST */
+  .checklist-wrap { display:flex; flex-direction:column; gap:8px; margin-bottom:12px; }
+  .check-rule { display:flex; align-items:center; gap:10px; padding:9px 12px; background:var(--bg-primary); border:1px solid var(--border); border-radius:6px; cursor:pointer; font-size:13px; color:var(--text-secondary); transition:all 0.15s; user-select:none; }
+  .check-rule:hover { border-color:var(--text-muted); }
+  .check-rule.checked { border-color:#00d4aa44; background:var(--accent-dim); color:var(--text-primary); }
+  .check-rule .cr-box { width:18px; height:18px; border-radius:4px; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:10px; flex-shrink:0; transition:all 0.15s; }
+  .check-rule.checked .cr-box { background:var(--accent); border-color:var(--accent); color:#000; }
+  .checklist-score { font-family:var(--font-mono); font-size:11px; color:var(--text-muted); text-align:right; margin-bottom:12px; }
+
+  /* ADMIN */
   .user-table { width:100%; border-collapse:collapse; }
   .user-table th { font-family:var(--font-mono); font-size:9px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-muted); padding:10px 14px; text-align:left; border-bottom:1px solid var(--border); }
   .user-table td { padding:12px 14px; border-bottom:1px solid var(--border); font-size:13px; vertical-align:middle; }
   .user-table tr:last-child td { border-bottom:none; }
   .user-table tr:hover td { background:var(--bg-hover); }
-  .uid-chip { font-family:var(--font-mono); font-size:10px; color:var(--text-muted); background:var(--bg-hover); padding:2px 8px; border-radius:4px; border:1px solid var(--border); }
 
-  /* ── LIGHTBOX ── */
+  /* LIGHTBOX */
   .lightbox { position:fixed; inset:0; background:rgba(0,0,0,0.92); display:flex; align-items:center; justify-content:center; z-index:2000; cursor:zoom-out; }
   .lightbox img { max-width:92vw; max-height:90vh; border-radius:8px; object-fit:contain; }
 
-  /* ── EMPTY STATE ── */
+  /* EMPTY STATE */
   .empty-state { text-align:center; padding:60px 20px; color:var(--text-muted); }
   .empty-state svg { width:48px; height:48px; margin:0 auto 16px; opacity:0.3; }
   .empty-state h3 { font-size:16px; color:var(--text-secondary); margin-bottom:8px; }
   .empty-state p { font-size:13px; line-height:1.6; max-width:320px; margin:0 auto 20px; }
 
-  /* ── FILTER BAR ── */
+  /* FILTER BAR */
   .filter-bar { display:flex; gap:10px; align-items:center; margin-bottom:20px; flex-wrap:wrap; }
   .filter-bar .form-control { width:auto; flex:1; min-width:160px; }
   .filter-chip { padding:6px 14px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--text-muted); font-size:11px; font-family:var(--font-mono); cursor:pointer; transition:all 0.15s; white-space:nowrap; }
   .filter-chip:hover { border-color:var(--text-muted); color:var(--text-primary); }
   .filter-chip.active { border-color:var(--accent); color:var(--accent); background:var(--accent-dim); }
 
-  /* ── UPLOAD ── */
+  /* UPLOAD */
   .upload-area { border:2px dashed var(--border); border-radius:8px; padding:24px; text-align:center; cursor:pointer; transition:all 0.2s; color:var(--text-muted); font-size:12px; }
   .upload-area:hover { border-color:var(--accent); color:var(--accent); }
   .upload-area input { display:none; }
@@ -279,28 +282,19 @@
   .ss-preview-item img { width:100%; height:100%; object-fit:cover; border-radius:6px; border:1px solid var(--border); }
   .ss-remove { position:absolute; top:-6px; right:-6px; width:18px; height:18px; background:var(--red); border-radius:50%; border:none; color:#fff; font-size:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
 
-  /* ── TOAST ── */
+  /* TOAST */
   .toast { position:fixed; bottom:24px; right:24px; background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:12px 18px; color:var(--text-primary); font-size:13px; z-index:9999; display:flex; align-items:center; gap:10px; box-shadow:0 8px 32px rgba(0,0,0,0.5); animation:slideUp 0.3s ease; }
-  .toast.success{border-color:var(--border-accent);} .toast.error{border-color:#ff4d4d44;}
+  .toast.success{border-color:var(--border-accent);} .toast.error{border-color:#ff4d4d44;} .toast.xp{border-color:#9b7fe844;}
   .toast-dot { width:7px; height:7px; border-radius:50%; }
-  .toast.success .toast-dot{background:var(--accent);} .toast.error .toast-dot{background:var(--red);}
+  .toast.success .toast-dot{background:var(--accent);} .toast.error .toast-dot{background:var(--red);} .toast.xp .toast-dot{background:var(--purple);}
   @keyframes slideUp { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
-
-  .winrate-bar { height:6px; background:var(--bg-hover); border-radius:3px; margin-top:6px; overflow:hidden; }
-  .winrate-fill { height:100%; background:var(--accent); border-radius:3px; transition:width 0.5s ease; }
-  .winrate-fill.red { background:var(--red); }
 
   .page { display:none; }
   .page.active { display:block; }
-
   .divider { border:none; border-top:1px solid var(--border); margin:20px 0; }
-
   .info-box { background:var(--bg-hover); border:1px solid var(--border); border-radius:8px; padding:14px 16px; font-size:12px; color:var(--text-secondary); line-height:1.6; margin-bottom:16px; }
   .info-box strong { color:var(--accent); font-weight:500; }
-
-  /* saving indicator */
-  .saving-dot { width:6px; height:6px; border-radius:50%; background:var(--accent); display:inline-block; margin-left:6px; animation:pulse 1s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+  .section-divider { font-family:var(--font-mono); font-size:9px; letter-spacing:2px; color:var(--text-muted); text-transform:uppercase; margin:16px 0 10px; padding-bottom:6px; border-bottom:1px solid var(--border); }
 </style>
 </head>
 <body>
@@ -311,7 +305,7 @@
   <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-muted);letter-spacing:2px">CONNECTING...</div>
 </div>
 
-<!-- LOGIN SCREEN -->
+<!-- LOGIN -->
 <div id="login-screen" style="display:none">
   <div class="login-box">
     <div class="login-brand">
@@ -363,6 +357,10 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M3 12h18M3 18h18"/><circle cx="6" cy="6" r="1.5" fill="currentColor"/><circle cx="6" cy="12" r="1.5" fill="currentColor"/><circle cx="6" cy="18" r="1.5" fill="currentColor"/></svg>
       Pairs
     </div>
+    <div class="nav-item" data-nav="rules">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      My Rules
+    </div>
     <div class="nav-item admin-only" data-nav="admin">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
       User Management
@@ -394,6 +392,10 @@
         </div>
       </div>
       <div class="topbar-right">
+        <button class="btn btn-export" onclick="exportCSV()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Export CSV
+        </button>
         <span class="user-role-badge" id="topbar-role-badge"></span>
         <button class="btn btn-primary" id="primary-action-btn" onclick="openAddAnalysis()">+ New Analysis</button>
       </div>
@@ -403,6 +405,10 @@
 
       <!-- OVERVIEW -->
       <div class="page active" id="page-overview">
+        <div id="xp-banner-wrap"></div>
+        <div id="streak-banner-wrap"></div>
+        <div id="goals-wrap"></div>
+        <div id="trophy-shelf-wrap"></div>
         <div class="stats-grid" id="stats-grid"></div>
         <div class="section-header">
           <div class="section-title">Tracked Pairs</div>
@@ -441,26 +447,30 @@
         <div class="pairs-grid" id="all-pairs-grid"></div>
       </div>
 
-      <!-- ADMIN PAGE -->
+      <!-- MY RULES PAGE -->
+      <div class="page" id="page-rules">
+        <div class="section-header">
+          <div class="section-title">My Trading Rules</div>
+          <button class="btn btn-primary" onclick="openAddRule()">+ Add Rule</button>
+        </div>
+        <div class="info-box">
+          <strong>Rule Checklist</strong> — These rules appear as a checklist every time you log a new analysis. Build discipline by confirming each rule before entering a trade.
+        </div>
+        <div id="rules-list"></div>
+      </div>
+
+      <!-- ADMIN -->
       <div class="page" id="page-admin">
         <div class="section-header">
           <div class="section-title">User Management</div>
           <button class="btn btn-gold" onclick="openAddUser()">+ Create User</button>
         </div>
         <div class="info-box">
-          <strong>Admin Panel</strong> — Create user accounts and share credentials with traders. Each user gets their own isolated data in Firebase. Only you (admin) can manage all users.
+          <strong>Admin Panel</strong> — Create user accounts and share credentials with traders. Each user gets their own isolated data in Firebase.
         </div>
         <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;overflow:hidden;">
           <table class="user-table" id="user-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Created</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
+            <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Created</th><th>Actions</th></tr></thead>
             <tbody id="user-table-body"></tbody>
           </table>
         </div>
@@ -597,10 +607,54 @@
           </select>
         </div>
       </div>
+
+      <!-- CONFIDENCE -->
+      <div class="form-group">
+        <label class="form-label">Setup Confidence</label>
+        <div class="confidence-row" id="conf-stars">
+          <span class="conf-star" data-val="1">★</span>
+          <span class="conf-star" data-val="2">★</span>
+          <span class="conf-star" data-val="3">★</span>
+          <span class="conf-star" data-val="4">★</span>
+          <span class="conf-star" data-val="5">★</span>
+        </div>
+        <input type="hidden" id="analysis-confidence" value="0">
+      </div>
+
+      <!-- MISTAKE TAGS -->
+      <div class="form-group">
+        <label class="form-label">Mistake Tags (if any)</label>
+        <div class="mistake-tags-wrap" id="mistake-tags-wrap">
+          <div class="m-tag" onclick="toggleMTag(this,'FOMO entry')">FOMO entry</div>
+          <div class="m-tag" onclick="toggleMTag(this,'Revenge trade')">Revenge trade</div>
+          <div class="m-tag" onclick="toggleMTag(this,'Late entry')">Late entry</div>
+          <div class="m-tag" onclick="toggleMTag(this,'Wrong session')">Wrong session</div>
+          <div class="m-tag" onclick="toggleMTag(this,'No confirmation')">No confirmation</div>
+          <div class="m-tag" onclick="toggleMTag(this,'Moved SL')">Moved SL</div>
+          <div class="m-tag" onclick="toggleMTag(this,'Overtraded')">Overtraded</div>
+          <div class="m-tag" onclick="toggleMTag(this,'Ignored HTF')">Ignored HTF</div>
+        </div>
+        <input type="hidden" id="analysis-mistakes" value="">
+      </div>
+
+      <!-- LESSON -->
+      <div class="form-group">
+        <label class="form-label">Lesson Learned</label>
+        <input type="text" class="form-control" id="analysis-lesson" placeholder="What did this trade teach you?">
+      </div>
+
+      <!-- RULES CHECKLIST -->
+      <div id="rules-checklist-section" style="display:none">
+        <div class="section-divider">Pre-trade rule checklist</div>
+        <div class="checklist-wrap" id="modal-checklist"></div>
+        <div class="checklist-score" id="checklist-score-label"></div>
+      </div>
+
       <div class="form-group">
         <label class="form-label">Analysis Notes</label>
         <textarea class="form-control" id="analysis-notes" rows="4" placeholder="HTF context, liquidity targeted, OB location, MSS confirmation, entry model..."></textarea>
       </div>
+
       <div class="form-group">
         <label class="form-label">Screenshots</label>
         <div class="upload-area" onclick="document.getElementById('screenshot-input').click()">
@@ -618,7 +672,34 @@
   </div>
 </div>
 
-<!-- CREATE USER MODAL (admin only) -->
+<!-- RULE MODAL -->
+<div class="modal-overlay" id="rule-modal" style="display:none">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-header">
+      <div class="modal-title" id="rule-modal-title">Add Rule</div>
+      <button class="modal-close" onclick="closeRuleModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="rule-edit-id">
+      <div class="form-group">
+        <label class="form-label">Rule *</label>
+        <input type="text" class="form-control" id="rule-text" placeholder="e.g. HTF bias must be confirmed before entry">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select class="form-control" id="rule-category">
+          <option>Pre-trade</option><option>Entry</option><option>Risk Management</option><option>Exit</option><option>Mindset</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeRuleModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveRule()">Save Rule</button>
+    </div>
+  </div>
+</div>
+
+<!-- CREATE USER MODAL -->
 <div class="modal-overlay" id="user-modal" style="display:none">
   <div class="modal" style="max-width:460px">
     <div class="modal-header">
@@ -646,7 +727,7 @@
         </select>
       </div>
       <div class="info-box" style="margin-top:8px">
-        After creating, share the <strong>email + password</strong> with the trader. They can reset their password anytime via <strong>Forgot Password</strong> on the login screen.
+        After creating, share the <strong>email + password</strong> with the trader. They can reset their password anytime via <strong>Forgot Password</strong>.
       </div>
     </div>
     <div class="modal-footer">
@@ -667,13 +748,10 @@
   <span id="toast-msg"></span>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════ -->
-<!-- FIREBASE SDK -->
-<!-- ═══════════════════════════════════════════════════════ -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // ═══════════════════════════════════════════════════════
 // 🔥 PASTE YOUR FIREBASE CONFIG HERE
@@ -687,7 +765,6 @@ const firebaseConfig = {
   appId: "%%FIREBASE_APP_ID%%"
 };
 
-// ── Init Firebase ──
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -695,11 +772,14 @@ const db = getFirestore(app);
 // ── State ──
 let currentUser = null;
 let currentUserProfile = null;
-let state = { pairs: [], analyses: [] };
+let state = { pairs: [], analyses: [], rules: [], gamification: { xp: 0, streak: 0, lastLogDate: '', longestStreak: 0, weeklyGoal: 5, winRateGoal: 60, weeklyTradeGoal: 5 } };
 let logFilter = 'all';
 let currentPage = 'overview';
 let currentPairForDetail = null;
 let pendingScreenshots = [];
+let pendingMistakes = [];
+let pendingConfidence = 0;
+let checklistState = {};
 
 const DEFAULT_PAIRS = [
   { id:'p_eurusd', symbol:'EURUSD', category:'Forex Major', htfBias:'Bullish', session:'London + NY', tvUrl:'https://www.tradingview.com/chart/?symbol=EURUSD', notes:'', createdAt:Date.now() },
@@ -709,17 +789,99 @@ const DEFAULT_PAIRS = [
   { id:'p_nas100', symbol:'NAS100', category:'Index', htfBias:'', session:'New York', tvUrl:'https://www.tradingview.com/chart/?symbol=NASDAQ%3ANDX', notes:'', createdAt:Date.now() },
 ];
 
-// ═══════════════════════════════════════════════════════
-// AUTH STATE LISTENER
-// ═══════════════════════════════════════════════════════
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    currentUser = user;
-    await bootApp(user);
-  } else {
-    currentUser = null;
-    showLoginScreen();
+const DEFAULT_RULES = [
+  { id:'r1', text:'HTF bias confirmed before entry', category:'Pre-trade', createdAt:Date.now() },
+  { id:'r2', text:'Liquidity swept before entry', category:'Pre-trade', createdAt:Date.now() },
+  { id:'r3', text:'MSS confirmed on LTF', category:'Entry', createdAt:Date.now() },
+  { id:'r4', text:'RR is at least 1:2', category:'Risk Management', createdAt:Date.now() },
+  { id:'r5', text:'Session kill zone is active', category:'Pre-trade', createdAt:Date.now() },
+];
+
+// ── XP & Gamification ──
+const LEVELS = [
+  { min:0, label:'Newbie Trader' }, { min:100, label:'Chart Watcher' },
+  { min:300, label:'Setup Spotter' }, { min:600, label:'Pattern Hunter' },
+  { min:1000, label:'Block Trader' }, { min:1500, label:'Liquidity Seeker' },
+  { min:2200, label:'Market Sniper' }, { min:3000, label:'ICT Practitioner' },
+  { min:4000, label:'SMC Adept' }, { min:5500, label:'Order Flow Master' },
+  { min:7500, label:'Elite Operator' }
+];
+
+function getLevelInfo(xp) {
+  let level = 0, info = LEVELS[0];
+  for (let i = 0; i < LEVELS.length; i++) {
+    if (xp >= LEVELS[i].min) { level = i + 1; info = LEVELS[i]; }
   }
+  const nextMin = LEVELS[level] ? LEVELS[level].min : LEVELS[LEVELS.length - 1].min + 2000;
+  const prevMin = info.min;
+  const progress = Math.min(100, Math.round(((xp - prevMin) / (nextMin - prevMin)) * 100));
+  return { level, label: info.label, xp, nextMin, prevMin, progress };
+}
+
+function getXPForAction(action) {
+  const map = { newAnalysis: 20, win: 30, streak3: 50, streak7: 100, rulesComplete: 15 };
+  return map[action] || 0;
+}
+
+function awardXP(amount, reason) {
+  if (!state.gamification) initGamification();
+  state.gamification.xp = (state.gamification.xp || 0) + amount;
+  saveState();
+  showToast(`+${amount} XP — ${reason}`, 'xp');
+  renderXPBanner();
+}
+
+function initGamification() {
+  state.gamification = { xp: 0, streak: 0, lastLogDate: '', longestStreak: 0, weeklyGoal: 5, winRateGoal: 60, weeklyTradeGoal: 5 };
+}
+
+function updateStreak() {
+  if (!state.gamification) initGamification();
+  const today = new Date().toISOString().split('T')[0];
+  const last = state.gamification.lastLogDate;
+  if (last === today) return;
+  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+  if (last === yesterday) {
+    state.gamification.streak = (state.gamification.streak || 0) + 1;
+  } else if (last !== today) {
+    state.gamification.streak = 1;
+  }
+  state.gamification.lastLogDate = today;
+  if (state.gamification.streak > (state.gamification.longestStreak || 0)) {
+    state.gamification.longestStreak = state.gamification.streak;
+  }
+}
+
+function getWeekAnalyses() {
+  const now = new Date();
+  const monday = new Date(now);
+  monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+  monday.setHours(0,0,0,0);
+  return state.analyses.filter(a => new Date(a.date + 'T00:00:00') >= monday);
+}
+
+function getAchievements() {
+  const g = state.gamification || {};
+  const wins = state.analyses.filter(a => a.result === 'Win').length;
+  const total = state.analyses.length;
+  const completed = wins + state.analyses.filter(a => a.result === 'Loss').length;
+  const wr = completed > 0 ? Math.round((wins / completed) * 100) : 0;
+  return [
+    { icon: '🔥', label: '3-day streak', earned: (g.streak || 0) >= 3 },
+    { icon: '⚡', label: '7-day streak', earned: (g.streak || 0) >= 7 },
+    { icon: '🎯', label: '10 wins', earned: wins >= 10 },
+    { icon: '🏅', label: '25 wins', earned: wins >= 25 },
+    { icon: '📈', label: '60% WR', earned: wr >= 60 && completed >= 5 },
+    { icon: '💎', label: '50 trades', earned: total >= 50 },
+    { icon: '🏆', label: '100 trades', earned: total >= 100 },
+    { icon: '🌟', label: 'Level 5+', earned: getLevelInfo(g.xp || 0).level >= 5 },
+  ];
+}
+
+// ── Auth State ──
+onAuthStateChanged(auth, async (user) => {
+  if (user) { currentUser = user; await bootApp(user); }
+  else { currentUser = null; showLoginScreen(); }
 });
 
 function showLoginScreen() {
@@ -728,81 +890,57 @@ function showLoginScreen() {
   document.getElementById('app').style.display = 'none';
 }
 
-// ═══════════════════════════════════════════════════════
-// LOGIN / LOGOUT / FORGOT PASSWORD
-// ═══════════════════════════════════════════════════════
+// ── Login / Logout ──
 window.doLogin = async function() {
   const email = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
   const errEl = document.getElementById('login-error');
   errEl.style.display = 'none';
   if (!email || !password) { errEl.textContent = 'Enter email and password.'; errEl.style.display = 'block'; return; }
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-  } catch(e) {
-    errEl.textContent = 'Invalid email or password.';
-    errEl.style.display = 'block';
-  }
+  try { await signInWithEmailAndPassword(auth, email, password); }
+  catch(e) { errEl.textContent = 'Invalid email or password.'; errEl.style.display = 'block'; }
 };
 
-window.doLogout = async function() {
-  await signOut(auth);
-};
+window.doLogout = async function() { await signOut(auth); };
 
 window.doForgotPassword = async function() {
   const email = document.getElementById('login-email').value.trim();
-  if (!email) {
-    const errEl = document.getElementById('login-error');
-    errEl.textContent = 'Enter your email first, then click Forgot Password.';
-    errEl.style.display = 'block';
-    return;
-  }
-  try {
-    await sendPasswordResetEmail(auth, email);
-    showToast('Password reset email sent! Check your inbox.', 'success');
-  } catch(e) {
-    showToast('Could not send reset email. Check the address.', 'error');
-  }
+  if (!email) { const e = document.getElementById('login-error'); e.textContent = 'Enter your email first.'; e.style.display = 'block'; return; }
+  try { await sendPasswordResetEmail(auth, email); showToast('Reset email sent!', 'success'); }
+  catch(e) { showToast('Could not send reset email.', 'error'); }
 };
 
 document.getElementById('login-password').addEventListener('keydown', e => { if (e.key === 'Enter') window.doLogin(); });
 document.getElementById('login-email').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('login-password').focus(); });
 
-// ═══════════════════════════════════════════════════════
-// BOOT APP
-// ═══════════════════════════════════════════════════════
+// ── Boot ──
 async function bootApp(user) {
   document.getElementById('loading-screen').style.display = 'none';
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
 
-  // Load user profile from Firestore
   const profileRef = doc(db, 'users', user.uid);
   const profileSnap = await getDoc(profileRef);
-
   if (profileSnap.exists()) {
     currentUserProfile = profileSnap.data();
   } else {
-    // First time login — create profile
     currentUserProfile = { fullname: user.email.split('@')[0], email: user.email, role: 'user', createdAt: new Date().toISOString().split('T')[0] };
     await setDoc(profileRef, currentUserProfile);
   }
 
-  // Load user trading data
   const dataRef = doc(db, 'userdata', user.uid);
   const dataSnap = await getDoc(dataRef);
-
   if (dataSnap.exists()) {
     state = dataSnap.data();
     if (!state.pairs) state.pairs = [];
     if (!state.analyses) state.analyses = [];
+    if (!state.rules) state.rules = DEFAULT_RULES;
+    if (!state.gamification) initGamification();
   } else {
-    // First time — seed default pairs
-    state = { pairs: DEFAULT_PAIRS.map(p => ({ ...p, id: p.id + '_' + user.uid })), analyses: [] };
+    state = { pairs: DEFAULT_PAIRS.map(p => ({ ...p, id: p.id + '_' + user.uid })), analyses: [], rules: DEFAULT_RULES, gamification: { xp: 0, streak: 0, lastLogDate: '', longestStreak: 0, weeklyTradeGoal: 5, winRateGoal: 60 } };
     await setDoc(dataRef, state);
   }
 
-  // UI setup
   const initials = (currentUserProfile.fullname || user.email).substring(0, 2).toUpperCase();
   document.getElementById('sb-avatar').textContent = initials;
   document.getElementById('sb-name').textContent = currentUserProfile.fullname || user.email;
@@ -811,32 +949,25 @@ async function bootApp(user) {
   const roleBadge = document.getElementById('topbar-role-badge');
   roleBadge.textContent = (currentUserProfile.role || 'user').toUpperCase();
   roleBadge.className = 'user-role-badge ' + (currentUserProfile.role === 'admin' ? 'role-admin' : 'role-user');
-
   document.body.classList.toggle('is-admin', currentUserProfile.role === 'admin');
 
   navigate('overview');
   renderSidebarPairs();
+  setupConfidenceStars();
 }
 
-// ═══════════════════════════════════════════════════════
-// SAVE STATE TO FIRESTORE
-// ═══════════════════════════════════════════════════════
+// ── Save State ──
 let saveTimer = null;
 async function saveState() {
   if (!currentUser) return;
   clearTimeout(saveTimer);
   saveTimer = setTimeout(async () => {
-    try {
-      await setDoc(doc(db, 'userdata', currentUser.uid), state);
-    } catch(e) {
-      showToast('Save failed. Check connection.', 'error');
-    }
-  }, 800); // debounce 800ms
+    try { await setDoc(doc(db, 'userdata', currentUser.uid), state); }
+    catch(e) { showToast('Save failed. Check connection.', 'error'); }
+  }, 800);
 }
 
-// ═══════════════════════════════════════════════════════
-// NAVIGATION
-// ═══════════════════════════════════════════════════════
+// ── Navigation ──
 window.navigate = function(page, extra) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -845,14 +976,15 @@ window.navigate = function(page, extra) {
   const navEl = document.querySelector(`[data-nav="${page}"]`);
   if (navEl) navEl.classList.add('active');
 
-  const titles = { overview:'Overview', log:'Analysis Log', pairs:'All Pairs', 'pair-detail': extra ? extra.symbol : 'Pair', admin:'User Management' };
-  const subs = { overview:'Dashboard', log:'All analysis entries', pairs:'Manage watchlist', 'pair-detail': extra ? extra.category : '', admin:'Admin · Manage accounts' };
+  const titles = { overview:'Overview', log:'Analysis Log', pairs:'All Pairs', 'pair-detail': extra ? extra.symbol : 'Pair', admin:'User Management', rules:'My Trading Rules' };
+  const subs = { overview:'Dashboard & Gamification', log:'All analysis entries', pairs:'Manage watchlist', 'pair-detail': extra ? extra.category : '', admin:'Admin · Manage accounts', rules:'Build discipline' };
   document.getElementById('topbar-title').textContent = titles[page] || page;
   document.getElementById('topbar-sub').textContent = subs[page] || '';
 
   const btn = document.getElementById('primary-action-btn');
   if (page === 'pairs') { btn.textContent = '+ Add Pair'; btn.onclick = () => window.openAddPair(); }
   else if (page === 'admin') { btn.textContent = '+ Create User'; btn.onclick = () => window.openAddUser(); }
+  else if (page === 'rules') { btn.textContent = '+ Add Rule'; btn.onclick = () => window.openAddRule(); }
   else { btn.textContent = '+ New Analysis'; btn.onclick = () => window.openAddAnalysis(); }
 
   if (page === 'overview') renderOverview();
@@ -860,6 +992,7 @@ window.navigate = function(page, extra) {
   if (page === 'pairs') renderPairsPage();
   if (page === 'pair-detail' && extra) { currentPairForDetail = extra; renderPairDetail(extra); }
   if (page === 'admin' && currentUserProfile.role === 'admin') renderAdminPanel();
+  if (page === 'rules') renderRulesPage();
 
   if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
 };
@@ -873,9 +1006,7 @@ document.querySelectorAll('[data-nav]').forEach(el => {
 
 window.toggleSidebar = function() { document.getElementById('sidebar').classList.toggle('open'); };
 
-// ═══════════════════════════════════════════════════════
-// SIDEBAR PAIRS
-// ═══════════════════════════════════════════════════════
+// ── Sidebar Pairs ──
 function renderSidebarPairs() {
   const container = document.getElementById('sidebar-pairs');
   container.innerHTML = '';
@@ -891,10 +1022,118 @@ function renderSidebarPairs() {
   });
 }
 
-// ═══════════════════════════════════════════════════════
-// OVERVIEW
-// ═══════════════════════════════════════════════════════
-function renderOverview() { renderStats(); renderPairsGrid(document.getElementById('pairs-grid')); }
+// ── Gamification Renders ──
+function renderXPBanner() {
+  const g = state.gamification || {};
+  const li = getLevelInfo(g.xp || 0);
+  const initials = (currentUserProfile?.fullname || '?').substring(0, 2).toUpperCase();
+  document.getElementById('xp-banner-wrap').innerHTML = `
+    <div class="xp-banner">
+      <div class="xp-avatar">${initials}</div>
+      <div class="xp-info">
+        <div class="xp-level">Level ${li.level} — ${li.label}</div>
+        <div class="xp-bar-bg"><div class="xp-bar-fill" style="width:${li.progress}%"></div></div>
+        <div class="xp-sub">${li.xp} / ${li.nextMin} XP to Level ${li.level + 1}</div>
+      </div>
+      <div class="xp-rank">
+        <div class="xp-rank-label">Total XP</div>
+        <div class="xp-rank-val">${g.xp || 0}</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderStreakBanner() {
+  const g = state.gamification || {};
+  const streak = g.streak || 0;
+  const today = new Date();
+  const days = ['M','T','W','T','F','S','S'];
+  const todayDow = (today.getDay() + 6) % 7;
+  const dots = days.map((d, i) => `<div class="s-dot${i <= todayDow ? ' done' : ''}">${d}</div>`).join('');
+  document.getElementById('streak-banner-wrap').innerHTML = `
+    <div class="streak-banner">
+      <div class="streak-left">
+        <div class="streak-num">${streak}</div>
+        <div class="streak-lbl">Day analysis streak · Best: ${g.longestStreak || 0}</div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:var(--text-muted);margin-bottom:8px;text-align:right;font-family:var(--font-mono)">THIS WEEK</div>
+        <div class="streak-dots">${dots}</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderGoals() {
+  const g = state.gamification || {};
+  const weekAnalyses = getWeekAnalyses();
+  const weekCount = weekAnalyses.length;
+  const weekGoal = g.weeklyTradeGoal || 5;
+  const weekProgress = Math.min(100, Math.round((weekCount / weekGoal) * 100));
+  const weekR = 22;
+  const weekCirc = 2 * Math.PI * weekR;
+  const weekOffset = weekCirc - (weekCirc * weekProgress / 100);
+
+  const wins = state.analyses.filter(a => a.result === 'Win').length;
+  const losses = state.analyses.filter(a => a.result === 'Loss').length;
+  const completed = wins + losses;
+  const wr = completed > 0 ? Math.round((wins / completed) * 100) : 0;
+  const wrGoal = g.winRateGoal || 60;
+  const wrProgress = Math.min(100, Math.round((wr / wrGoal) * 100));
+  const wrOffset = weekCirc - (weekCirc * wrProgress / 100);
+
+  document.getElementById('goals-wrap').innerHTML = `
+    <div class="goals-grid">
+      <div class="goal-card">
+        <svg width="56" height="56" viewBox="0 0 56 56">
+          <circle cx="28" cy="28" r="${weekR}" fill="none" stroke="var(--border)" stroke-width="5"/>
+          <circle cx="28" cy="28" r="${weekR}" fill="none" stroke="var(--accent)" stroke-width="5"
+            stroke-dasharray="${weekCirc}" stroke-dashoffset="${weekOffset}" stroke-linecap="round" transform="rotate(-90 28 28)"/>
+          <text x="28" y="33" text-anchor="middle" font-size="12" font-family="var(--font-mono)" fill="var(--text-primary)" font-weight="600">${weekCount}/${weekGoal}</text>
+        </svg>
+        <div>
+          <div class="goal-text-main">Weekly trade goal</div>
+          <div class="goal-text-sub">${weekGoal - weekCount > 0 ? (weekGoal - weekCount) + ' remaining' : 'Goal reached!'}</div>
+          ${weekCount >= weekGoal ? '<div class="goal-text-achieved">✓ Complete</div>' : ''}
+        </div>
+      </div>
+      <div class="goal-card">
+        <svg width="56" height="56" viewBox="0 0 56 56">
+          <circle cx="28" cy="28" r="${weekR}" fill="none" stroke="var(--border)" stroke-width="5"/>
+          <circle cx="28" cy="28" r="${weekR}" fill="none" stroke="var(--purple)" stroke-width="5"
+            stroke-dasharray="${weekCirc}" stroke-dashoffset="${wrOffset}" stroke-linecap="round" transform="rotate(-90 28 28)"/>
+          <text x="28" y="33" text-anchor="middle" font-size="12" font-family="var(--font-mono)" fill="var(--text-primary)" font-weight="600">${wr}%</text>
+        </svg>
+        <div>
+          <div class="goal-text-main">Win-rate goal</div>
+          <div class="goal-text-sub">Target: ${wrGoal}%</div>
+          ${wr >= wrGoal && completed >= 5 ? '<div class="goal-text-achieved">✓ Achieved</div>' : ''}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderTrophyShelf() {
+  const achievements = getAchievements();
+  const badges = achievements.map(a => `<div class="trophy-badge${a.earned ? ' earned' : ''}">${a.icon} ${a.label}</div>`).join('');
+  document.getElementById('trophy-shelf-wrap').innerHTML = `
+    <div class="trophy-shelf">
+      <span class="trophy-shelf-label">Achievements</span>
+      ${badges}
+    </div>
+  `;
+}
+
+// ── Overview ──
+function renderOverview() {
+  renderXPBanner();
+  renderStreakBanner();
+  renderGoals();
+  renderTrophyShelf();
+  renderStats();
+  renderPairsGrid(document.getElementById('pairs-grid'));
+}
 
 function calcStats() {
   const total = state.analyses.length;
@@ -907,15 +1146,18 @@ function calcStats() {
 
 function renderStats() {
   const s = calcStats();
+  const g = state.gamification || {};
   document.getElementById('stats-grid').innerHTML = `
     <div class="stat-card"><div class="stat-label">Total Analyses</div><div class="stat-value">${s.total}</div><div class="stat-sub">Across ${s.pairs} pairs</div></div>
     <div class="stat-card"><div class="stat-label">Win Rate</div><div class="stat-value ${s.wr >= 50 ? 'green' : 'red'}">${s.wr}%</div><div class="stat-sub">${s.wins}W / ${s.losses}L</div><div class="winrate-bar"><div class="winrate-fill ${s.wr < 50 ? 'red' : ''}" style="width:${s.wr}%"></div></div></div>
     <div class="stat-card"><div class="stat-label">Wins</div><div class="stat-value green">${s.wins}</div></div>
     <div class="stat-card"><div class="stat-label">Losses</div><div class="stat-value red">${s.losses}</div></div>
-    <div class="stat-card"><div class="stat-label">Pairs Tracked</div><div class="stat-value gold">${s.pairs}</div></div>
+    <div class="stat-card"><div class="stat-label">Best Streak</div><div class="stat-value gold">${g.longestStreak || 0}</div><div class="stat-sub">Current: ${g.streak || 0}</div></div>
+    <div class="stat-card"><div class="stat-label">Pairs Tracked</div><div class="stat-value purple">${s.pairs}</div></div>
   `;
 }
 
+// ── Pairs Grid ──
 function renderPairsGrid(container) {
   container.innerHTML = '';
   if (state.pairs.length === 0) {
@@ -953,9 +1195,7 @@ function renderPairsGrid(container) {
   });
 }
 
-// ═══════════════════════════════════════════════════════
-// PAIR DETAIL
-// ═══════════════════════════════════════════════════════
+// ── Pair Detail ──
 function renderPairDetail(pair) {
   const analyses = state.analyses.filter(a => a.pairId === pair.id).sort((a, b) => new Date(b.date) - new Date(a.date));
   const wins = analyses.filter(a => a.result === 'Win').length;
@@ -963,10 +1203,8 @@ function renderPairDetail(pair) {
   const completed = wins + losses;
   const wr = completed > 0 ? Math.round((wins / completed) * 100) : 0;
   const bc = pair.htfBias === 'Bullish' ? 'bull' : pair.htfBias === 'Bearish' ? 'bear' : '';
-
   document.getElementById('primary-action-btn').onclick = () => window.openAddAnalysis(pair.id);
   document.getElementById('primary-action-btn').textContent = '+ Add Analysis';
-
   document.getElementById('pair-detail-content').innerHTML = `
     <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
       <div>
@@ -1001,9 +1239,7 @@ function emptyAnalysis() {
   return `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg><h3>No analyses yet</h3><p>Record your first analysis for this pair.</p></div>`;
 }
 
-// ═══════════════════════════════════════════════════════
-// ANALYSIS CARD
-// ═══════════════════════════════════════════════════════
+// ── Analysis Card ──
 function buildAnalysisCard(a) {
   const pair = state.pairs.find(p => p.id === a.pairId);
   const rb = { Win:'badge-win', Loss:'badge-loss', Pending:'badge-pending', Breakeven:'badge-be' }[a.result] || 'badge-neu-full';
@@ -1013,8 +1249,10 @@ function buildAnalysisCard(a) {
   let rr = '';
   if (a.entry && a.sl && a.tp) {
     const rrVal = Math.abs((parseFloat(a.tp) - parseFloat(a.entry)) / (parseFloat(a.entry) - parseFloat(a.sl)));
-    if (!isNaN(rrVal) && isFinite(rrVal)) rr = `<div class="analysis-field"><div class="analysis-field-label">RR Ratio</div><div class="analysis-field-value" style="color:var(--yellow)">1:${rrVal.toFixed(2)}</div></div>`;
+    if (!isNaN(rrVal) && isFinite(rrVal)) rr = `<div><div class="analysis-field-label">RR Ratio</div><div class="analysis-field-value" style="color:var(--yellow)">1:${rrVal.toFixed(2)}</div></div>`;
   }
+  const confStars = a.confidence > 0 ? `<div class="conf-display">${[1,2,3,4,5].map(i => `<span class="conf-star-display" style="color:${i <= a.confidence ? 'var(--yellow)' : 'var(--text-muted)'}">${i <= a.confidence ? '★' : '☆'}</span>`).join('')}</div>` : '';
+  const mistakeTags = a.mistakes && a.mistakes.length > 0 ? `<div class="mistake-chips">${a.mistakes.map(m => `<span class="mistake-chip">${m}</span>`).join('')}</div>` : '';
   div.innerHTML = `
     <div class="analysis-header">
       <div>
@@ -1027,15 +1265,18 @@ function buildAnalysisCard(a) {
           ${a.timeframe ? `<span class="badge badge-neu-full">${a.timeframe}</span>` : ''}
           ${a.session ? `<span class="badge badge-neu-full">${a.session}</span>` : ''}
         </div>
+        ${confStars}
       </div>
     </div>
     <div class="analysis-grid">
-      ${a.entry ? `<div class="analysis-field"><div class="analysis-field-label">Entry</div><div class="analysis-field-value">${a.entry}</div></div>` : ''}
-      ${a.sl ? `<div class="analysis-field"><div class="analysis-field-label">Stop Loss</div><div class="analysis-field-value" style="color:var(--red)">${a.sl}</div></div>` : ''}
-      ${a.tp ? `<div class="analysis-field"><div class="analysis-field-label">Take Profit</div><div class="analysis-field-value" style="color:var(--accent)">${a.tp}</div></div>` : ''}
+      ${a.entry ? `<div><div class="analysis-field-label">Entry</div><div class="analysis-field-value">${a.entry}</div></div>` : ''}
+      ${a.sl ? `<div><div class="analysis-field-label">Stop Loss</div><div class="analysis-field-value" style="color:var(--red)">${a.sl}</div></div>` : ''}
+      ${a.tp ? `<div><div class="analysis-field-label">Take Profit</div><div class="analysis-field-value" style="color:var(--accent)">${a.tp}</div></div>` : ''}
       ${rr}
     </div>
+    ${mistakeTags}
     ${a.notes ? `<div class="analysis-notes">${a.notes}</div>` : ''}
+    ${a.lesson ? `<div class="analysis-lesson">💡 ${a.lesson}</div>` : ''}
     ${a.screenshots && a.screenshots.length > 0 ? `<div class="analysis-screenshots">${a.screenshots.map((src, i) => `<img class="screenshot-thumb" src="${src}" onclick="window.openLightbox('${a.id}',${i})">`).join('')}</div>` : ''}
     <div class="analysis-actions">
       <button class="btn" onclick="window.editAnalysis('${a.id}')">Edit</button>
@@ -1045,9 +1286,7 @@ function buildAnalysisCard(a) {
   return div;
 }
 
-// ═══════════════════════════════════════════════════════
-// LOG
-// ═══════════════════════════════════════════════════════
+// ── Log ──
 window.setFilter = function(el, filter) {
   logFilter = filter;
   document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
@@ -1068,7 +1307,7 @@ function renderLog() {
   if (pairFilter) analyses = analyses.filter(a => a.pairId === pairFilter);
   if (search) analyses = analyses.filter(a => {
     const pair = state.pairs.find(p => p.id === a.pairId);
-    return (pair && pair.symbol.toLowerCase().includes(search)) || (a.notes && a.notes.toLowerCase().includes(search)) || (a.setup && a.setup.toLowerCase().includes(search));
+    return (pair && pair.symbol.toLowerCase().includes(search)) || (a.notes && a.notes.toLowerCase().includes(search)) || (a.setup && a.setup.toLowerCase().includes(search)) || (a.lesson && a.lesson.toLowerCase().includes(search));
   });
   const container = document.getElementById('log-list');
   container.innerHTML = '';
@@ -1079,14 +1318,87 @@ function renderLog() {
   analyses.forEach(a => container.appendChild(buildAnalysisCard(a)));
 }
 
-// ═══════════════════════════════════════════════════════
-// PAIRS PAGE
-// ═══════════════════════════════════════════════════════
+// ── Pairs Page ──
 function renderPairsPage() { renderPairsGrid(document.getElementById('all-pairs-grid')); }
 
-// ═══════════════════════════════════════════════════════
-// PAIR MODAL
-// ═══════════════════════════════════════════════════════
+// ── Rules Page ──
+function renderRulesPage() {
+  const container = document.getElementById('rules-list');
+  container.innerHTML = '';
+  if (!state.rules || state.rules.length === 0) {
+    container.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><h3>No rules yet</h3><p>Add your trading rules. They'll appear as a checklist when logging analyses.</p></div>`;
+    return;
+  }
+  const cats = [...new Set(state.rules.map(r => r.category))];
+  cats.forEach(cat => {
+    const catRules = state.rules.filter(r => r.category === cat);
+    const section = document.createElement('div');
+    section.style.cssText = 'margin-bottom:20px';
+    section.innerHTML = `<div style="font-family:var(--font-mono);font-size:10px;letter-spacing:1.5px;color:var(--text-muted);text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)">${cat}</div>`;
+    catRules.forEach(rule => {
+      const el = document.createElement('div');
+      el.className = 'analysis-card';
+      el.style.marginBottom = '8px';
+      el.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0"></div>
+            <span style="font-size:13px">${rule.text}</span>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn" style="padding:4px 10px;font-size:11px" onclick="window.editRule('${rule.id}')">Edit</button>
+            <button class="btn btn-danger" style="padding:4px 10px;font-size:11px" onclick="window.deleteRule('${rule.id}')">Delete</button>
+          </div>
+        </div>
+      `;
+      section.appendChild(el);
+    });
+    container.appendChild(section);
+  });
+}
+
+window.openAddRule = function() {
+  document.getElementById('rule-edit-id').value = '';
+  document.getElementById('rule-text').value = '';
+  document.getElementById('rule-category').value = 'Pre-trade';
+  document.getElementById('rule-modal-title').textContent = 'Add Rule';
+  document.getElementById('rule-modal').style.display = 'flex';
+};
+
+window.editRule = function(id) {
+  const rule = state.rules.find(r => r.id === id); if (!rule) return;
+  document.getElementById('rule-edit-id').value = id;
+  document.getElementById('rule-text').value = rule.text;
+  document.getElementById('rule-category').value = rule.category;
+  document.getElementById('rule-modal-title').textContent = 'Edit Rule';
+  document.getElementById('rule-modal').style.display = 'flex';
+};
+
+window.closeRuleModal = function() { document.getElementById('rule-modal').style.display = 'none'; };
+
+window.saveRule = function() {
+  const text = document.getElementById('rule-text').value.trim();
+  if (!text) return showToast('Enter a rule', 'error');
+  const editId = document.getElementById('rule-edit-id').value;
+  if (!state.rules) state.rules = [];
+  if (editId) {
+    const idx = state.rules.findIndex(r => r.id === editId);
+    if (idx > -1) state.rules[idx] = { ...state.rules[idx], text, category: document.getElementById('rule-category').value };
+    showToast('Rule updated');
+  } else {
+    state.rules.push({ id: 'r_' + Date.now(), text, category: document.getElementById('rule-category').value, createdAt: Date.now() });
+    showToast('Rule added');
+  }
+  saveState(); window.closeRuleModal(); renderRulesPage();
+};
+
+window.deleteRule = function(id) {
+  if (!confirm('Delete this rule?')) return;
+  state.rules = state.rules.filter(r => r.id !== id);
+  saveState(); renderRulesPage(); showToast('Rule deleted');
+};
+
+// ── Pair Modal ──
 window.openAddPair = function() {
   ['pair-edit-id','pair-symbol','pair-tv-url','pair-notes'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('pair-modal-title').textContent = 'Add Pair';
@@ -1095,17 +1407,6 @@ window.openAddPair = function() {
   document.getElementById('pair-session').value = '';
   document.getElementById('pair-modal').style.display = 'flex';
 };
-document.getElementById('pair-symbol').addEventListener('input', function() {
-  const sym = this.value.trim().toUpperCase();
-  const tvUrl = document.getElementById('pair-tv-url');
-  if (!tvUrl.dataset.manuallyEdited) {
-    tvUrl.value = sym ? `https://www.tradingview.com/chart/?symbol=${sym}` : '';
-  }
-});
-
-document.getElementById('pair-tv-url').addEventListener('input', function() {
-  this.dataset.manuallyEdited = 'true';
-});  
 
 window.editPair = function(id) {
   const pair = state.pairs.find(p => p.id === id); if (!pair) return;
@@ -1148,11 +1449,10 @@ window.deletePair = function(id) {
   saveState(); renderSidebarPairs(); window.navigate('overview'); showToast('Pair deleted');
 };
 
-// ═══════════════════════════════════════════════════════
-// ANALYSIS MODAL
-// ═══════════════════════════════════════════════════════
+// ── Analysis Modal ──
 window.openAddAnalysis = function(pairId) {
-  pendingScreenshots = []; document.getElementById('screenshots-preview').innerHTML = '';
+  pendingScreenshots = []; pendingMistakes = []; pendingConfidence = 0;
+  document.getElementById('screenshots-preview').innerHTML = '';
   document.getElementById('analysis-edit-id').value = '';
   document.getElementById('analysis-modal-title').textContent = 'New Analysis';
   const pairSel = document.getElementById('analysis-pair');
@@ -1162,15 +1462,22 @@ window.openAddAnalysis = function(pairId) {
   document.getElementById('analysis-bias').value = 'Bullish';
   document.getElementById('analysis-tf').value = 'HTF (D1/W1)';
   document.getElementById('analysis-session').value = 'London';
-  ['analysis-entry','analysis-sl','analysis-tp','analysis-notes'].forEach(id => document.getElementById(id).value = '');
+  ['analysis-entry','analysis-sl','analysis-tp','analysis-notes','analysis-lesson'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('analysis-setup').value = '';
   document.getElementById('analysis-result').value = 'Pending';
+  document.getElementById('analysis-confidence').value = '0';
+  document.getElementById('analysis-mistakes').value = '';
+  resetConfidenceStars();
+  resetMistakeTags();
+  renderModalChecklist();
   document.getElementById('analysis-modal').style.display = 'flex';
 };
 
 window.editAnalysis = function(id) {
   const a = state.analyses.find(x => x.id === id); if (!a) return;
   pendingScreenshots = [...(a.screenshots || [])];
+  pendingMistakes = [...(a.mistakes || [])];
+  pendingConfidence = a.confidence || 0;
   document.getElementById('analysis-edit-id').value = id;
   document.getElementById('analysis-modal-title').textContent = 'Edit Analysis';
   const pairSel = document.getElementById('analysis-pair');
@@ -1186,18 +1493,26 @@ window.editAnalysis = function(id) {
   document.getElementById('analysis-setup').value = a.setup || '';
   document.getElementById('analysis-result').value = a.result || 'Pending';
   document.getElementById('analysis-notes').value = a.notes || '';
+  document.getElementById('analysis-lesson').value = a.lesson || '';
+  document.getElementById('analysis-confidence').value = pendingConfidence;
+  document.getElementById('analysis-mistakes').value = pendingMistakes.join(',');
+  setConfidenceStars(pendingConfidence);
+  restoreMistakeTags(pendingMistakes);
   renderPendingScreenshots();
+  renderModalChecklist();
   document.getElementById('analysis-modal').style.display = 'flex';
 };
 
-window.closeAnalysisModal = function() { document.getElementById('analysis-modal').style.display = 'none'; pendingScreenshots = []; };
+window.closeAnalysisModal = function() { document.getElementById('analysis-modal').style.display = 'none'; pendingScreenshots = []; pendingMistakes = []; };
 
 window.saveAnalysis = function() {
   const pairId = document.getElementById('analysis-pair').value;
   const date = document.getElementById('analysis-date').value;
   if (!pairId || !date) return showToast('Select pair and date', 'error');
   const editId = document.getElementById('analysis-edit-id').value;
-  const data = { pairId, date, bias: document.getElementById('analysis-bias').value, timeframe: document.getElementById('analysis-tf').value, session: document.getElementById('analysis-session').value, entry: document.getElementById('analysis-entry').value, sl: document.getElementById('analysis-sl').value, tp: document.getElementById('analysis-tp').value, setup: document.getElementById('analysis-setup').value, result: document.getElementById('analysis-result').value, notes: document.getElementById('analysis-notes').value.trim(), screenshots: [...pendingScreenshots] };
+  const isNew = !editId;
+  const result = document.getElementById('analysis-result').value;
+  const data = { pairId, date, bias: document.getElementById('analysis-bias').value, timeframe: document.getElementById('analysis-tf').value, session: document.getElementById('analysis-session').value, entry: document.getElementById('analysis-entry').value, sl: document.getElementById('analysis-sl').value, tp: document.getElementById('analysis-tp').value, setup: document.getElementById('analysis-setup').value, result, notes: document.getElementById('analysis-notes').value.trim(), lesson: document.getElementById('analysis-lesson').value.trim(), confidence: pendingConfidence, mistakes: [...pendingMistakes], screenshots: [...pendingScreenshots] };
   if (editId) {
     const idx = state.analyses.findIndex(a => a.id === editId);
     if (idx > -1) state.analyses[idx] = { ...state.analyses[idx], ...data };
@@ -1205,12 +1520,23 @@ window.saveAnalysis = function() {
   } else {
     state.analyses.push({ id: 'a_' + Date.now(), createdAt: Date.now(), ...data });
     showToast('Analysis saved');
+    // XP
+    updateStreak();
+    let xpGained = getXPForAction('newAnalysis');
+    if (result === 'Win') xpGained += getXPForAction('win');
+    const checked = document.querySelectorAll('.cr-item.checked').length;
+    const total = state.rules ? state.rules.length : 0;
+    if (total > 0 && checked === total) xpGained += getXPForAction('rulesComplete');
+    state.gamification.xp = (state.gamification.xp || 0) + xpGained;
+    if (state.gamification.streak >= 3) state.gamification.xp += getXPForAction('streak3');
+    if (state.gamification.streak >= 7) { state.gamification.xp += getXPForAction('streak7') - getXPForAction('streak3'); }
   }
   saveState(); window.closeAnalysisModal();
   if (currentPage === 'overview') renderOverview();
   else if (currentPage === 'log') renderLog();
   else if (currentPage === 'pair-detail' && currentPairForDetail) renderPairDetail(currentPairForDetail);
   renderSidebarPairs();
+  if (isNew) setTimeout(() => showToast(`+${getXPForAction('newAnalysis') + (data.result === 'Win' ? getXPForAction('win') : 0)} XP earned!`, 'xp'), 1200);
 };
 
 window.deleteAnalysis = function(id) {
@@ -1223,9 +1549,122 @@ window.deleteAnalysis = function(id) {
   renderSidebarPairs();
 };
 
-// ═══════════════════════════════════════════════════════
-// ADMIN PANEL
-// ═══════════════════════════════════════════════════════
+// ── Checklist in modal ──
+function renderModalChecklist() {
+  const section = document.getElementById('rules-checklist-section');
+  const container = document.getElementById('modal-checklist');
+  if (!state.rules || state.rules.length === 0) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  container.innerHTML = '';
+  checklistState = {};
+  state.rules.forEach(rule => {
+    checklistState[rule.id] = false;
+    const el = document.createElement('div');
+    el.className = 'check-rule cr-item';
+    el.dataset.ruleId = rule.id;
+    el.innerHTML = `<div class="cr-box"></div><span>${rule.text}</span>`;
+    el.onclick = function() {
+      this.classList.toggle('checked');
+      checklistState[rule.id] = this.classList.contains('checked');
+      updateChecklistScore();
+    };
+    container.appendChild(el);
+  });
+  updateChecklistScore();
+}
+
+function updateChecklistScore() {
+  const total = state.rules ? state.rules.length : 0;
+  const checked = Object.values(checklistState).filter(Boolean).length;
+  const label = document.getElementById('checklist-score-label');
+  label.textContent = `${checked}/${total} rules confirmed`;
+  label.style.color = checked === total ? 'var(--accent)' : 'var(--text-muted)';
+}
+
+// ── Confidence Stars ──
+function setupConfidenceStars() {
+  document.querySelectorAll('#conf-stars .conf-star').forEach(star => {
+    star.addEventListener('click', function() {
+      const val = parseInt(this.dataset.val);
+      setConfidenceStars(val);
+      pendingConfidence = val;
+      document.getElementById('analysis-confidence').value = val;
+    });
+    star.addEventListener('mouseenter', function() {
+      const val = parseInt(this.dataset.val);
+      document.querySelectorAll('#conf-stars .conf-star').forEach((s, i) => {
+        s.classList.toggle('lit', i < val);
+      });
+    });
+    star.addEventListener('mouseleave', function() {
+      setConfidenceStars(pendingConfidence);
+    });
+  });
+}
+
+function setConfidenceStars(val) {
+  document.querySelectorAll('#conf-stars .conf-star').forEach((s, i) => s.classList.toggle('lit', i < val));
+}
+
+function resetConfidenceStars() {
+  pendingConfidence = 0;
+  document.querySelectorAll('#conf-stars .conf-star').forEach(s => s.classList.remove('lit'));
+}
+
+window.setConfidence = function(val) {
+  pendingConfidence = val;
+  setConfidenceStars(val);
+  document.getElementById('analysis-confidence').value = val;
+};
+
+// ── Mistake Tags ──
+window.toggleMTag = function(el, tag) {
+  el.classList.toggle('active');
+  if (el.classList.contains('active')) { if (!pendingMistakes.includes(tag)) pendingMistakes.push(tag); }
+  else { pendingMistakes = pendingMistakes.filter(m => m !== tag); }
+  document.getElementById('analysis-mistakes').value = pendingMistakes.join(',');
+};
+
+function resetMistakeTags() {
+  pendingMistakes = [];
+  document.querySelectorAll('.m-tag').forEach(t => t.classList.remove('active'));
+}
+
+function restoreMistakeTags(mistakes) {
+  document.querySelectorAll('.m-tag').forEach(t => {
+    const tag = t.textContent.trim();
+    t.classList.toggle('active', mistakes.includes(tag));
+  });
+}
+
+// ── Export CSV ──
+window.exportCSV = function() {
+  if (state.analyses.length === 0) return showToast('No analyses to export', 'error');
+  const headers = ['Date','Pair','Bias','Timeframe','Session','Setup','Entry','Stop Loss','Take Profit','RR','Result','Confidence','Mistakes','Lesson','Notes'];
+  const rows = state.analyses.map(a => {
+    const pair = state.pairs.find(p => p.id === a.pairId);
+    let rr = '';
+    if (a.entry && a.sl && a.tp) {
+      const v = Math.abs((parseFloat(a.tp) - parseFloat(a.entry)) / (parseFloat(a.entry) - parseFloat(a.sl)));
+      if (!isNaN(v) && isFinite(v)) rr = '1:' + v.toFixed(2);
+    }
+    return [
+      a.date, pair ? pair.symbol : '', a.bias, a.timeframe || '', a.session || '',
+      a.setup || '', a.entry || '', a.sl || '', a.tp || '', rr,
+      a.result || '', a.confidence || '', (a.mistakes || []).join('; '),
+      (a.lesson || '').replace(/,/g, ';'), (a.notes || '').replace(/,/g, ';')
+    ].map(v => `"${v}"`).join(',');
+  });
+  const csv = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `trade_journal_${new Date().toISOString().split('T')[0]}.csv`;
+  a.click(); URL.revokeObjectURL(url);
+  showToast('CSV exported!', 'success');
+};
+
+// ── Admin Panel ──
 async function renderAdminPanel() {
   const tbody = document.getElementById('user-table-body');
   tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:24px">Loading users...</td></tr>';
@@ -1238,17 +1677,11 @@ async function renderAdminPanel() {
       const isCurrentUser = uid === currentUser.uid;
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td>
-          <div style="font-weight:500;color:var(--text-primary)">${u.fullname || '—'}</div>
-        </td>
+        <td><div style="font-weight:500;color:var(--text-primary)">${u.fullname || '—'}</div></td>
         <td style="font-size:12px;color:var(--text-muted)">${u.email || '—'}</td>
         <td><span class="user-role-badge ${u.role === 'admin' ? 'role-admin' : 'role-user'}">${(u.role || 'user').toUpperCase()}</span></td>
         <td style="color:var(--text-muted);font-size:12px">${u.createdAt || '—'}</td>
-        <td>
-          <div style="display:flex;gap:6px">
-            ${!isCurrentUser ? `<button class="btn btn-danger" style="padding:5px 10px;font-size:11px" onclick="window.deleteUserAccount('${uid}','${u.email}')">Remove</button>` : '<span style="font-size:11px;color:var(--text-muted)">You</span>'}
-          </div>
-        </td>
+        <td><div style="display:flex;gap:6px">${!isCurrentUser ? `<button class="btn btn-danger" style="padding:5px 10px;font-size:11px" onclick="window.deleteUserAccount('${uid}','${u.email}')">Remove</button>` : '<span style="font-size:11px;color:var(--text-muted)">You</span>'}</div></td>
       `;
       tbody.appendChild(tr);
     });
@@ -1258,87 +1691,54 @@ async function renderAdminPanel() {
 }
 
 window.openAddUser = function() {
-  document.getElementById('user-fullname').value = '';
-  document.getElementById('user-email').value = '';
-  document.getElementById('user-password').value = '';
+  ['user-fullname','user-email','user-password'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('user-role').value = 'user';
   document.getElementById('user-modal').style.display = 'flex';
 };
-
 window.closeUserModal = function() { document.getElementById('user-modal').style.display = 'none'; };
 
- window.saveUser = async function() {
+window.saveUser = async function() {
   const fullname = document.getElementById('user-fullname').value.trim();
   const email = document.getElementById('user-email').value.trim();
   const password = document.getElementById('user-password').value;
   const role = document.getElementById('user-role').value;
-
   if (!email || !password) return showToast('Email and password required', 'error');
   if (password.length < 6) return showToast('Password must be at least 6 characters', 'error');
-
   const btn = document.getElementById('create-user-btn');
   btn.textContent = 'Creating...'; btn.disabled = true;
-
   try {
-    // Step 1: Create user via REST API (keeps admin logged in)
-    const signupRes = await fetch(
-      `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${firebaseConfig.apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, returnSecureToken: true })
-      }
-    );
+    const signupRes = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${firebaseConfig.apiKey}`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, returnSecureToken: true })
+    });
     const signupData = await signupRes.json();
-
     if (!signupRes.ok) {
       const errCode = signupData.error?.message || '';
-      if (errCode.includes('EMAIL_EXISTS')) showToast('Email already in use', 'error');
-      else showToast('Error: ' + errCode, 'error');
-      btn.textContent = 'Create User'; btn.disabled = false;
-      return;
+      showToast(errCode.includes('EMAIL_EXISTS') ? 'Email already in use' : 'Error: ' + errCode, 'error');
+      btn.textContent = 'Create User'; btn.disabled = false; return;
     }
-
     const newUid = signupData.localId;
-
-    // Step 2: Save profile in Firestore as admin
-    await setDoc(doc(db, 'users', newUid), {
-      fullname: fullname || email.split('@')[0],
-      email,
-      role,
-      createdAt: new Date().toISOString().split('T')[0]
-    });
-
-    // Step 3: Seed default pairs for new user
-    const newState = { pairs: DEFAULT_PAIRS.map(p => ({ ...p, id: p.id + '_' + newUid })), analyses: [] };
+    await setDoc(doc(db, 'users', newUid), { fullname: fullname || email.split('@')[0], email, role, createdAt: new Date().toISOString().split('T')[0] });
+    const newState = { pairs: DEFAULT_PAIRS.map(p => ({ ...p, id: p.id + '_' + newUid })), analyses: [], rules: DEFAULT_RULES, gamification: { xp: 0, streak: 0, lastLogDate: '', longestStreak: 0, weeklyTradeGoal: 5, winRateGoal: 60 } };
     await setDoc(doc(db, 'userdata', newUid), newState);
-
-    showToast(`User ${email} created successfully!`);
-    window.closeUserModal();
-    renderAdminPanel();
+    showToast(`User ${email} created!`);
+    window.closeUserModal(); renderAdminPanel();
   } catch(e) {
-    console.error(e);
-    showToast('Error creating user: ' + e.message, 'error');
+    showToast('Error: ' + e.message, 'error');
   }
-
   btn.textContent = 'Create User'; btn.disabled = false;
 };
 
 window.deleteUserAccount = async function(uid, email) {
-  if (!confirm(`Remove user ${email}? Their data will be deleted.`)) return;
+  if (!confirm(`Remove user ${email}?`)) return;
   try {
     await deleteDoc(doc(db, 'users', uid));
     await deleteDoc(doc(db, 'userdata', uid));
-    showToast('User removed');
-    renderAdminPanel();
-  } catch(e) {
-    showToast('Error removing user', 'error');
-  }
+    showToast('User removed'); renderAdminPanel();
+  } catch(e) { showToast('Error removing user', 'error'); }
 };
 
-// ═══════════════════════════════════════════════════════
-// SCREENSHOTS
-// ═══════════════════════════════════════════════════════
+// ── Screenshots ──
 window.handleScreenshots = function(input) {
   Array.from(input.files).forEach(file => {
     const reader = new FileReader();
@@ -1359,9 +1759,7 @@ function renderPendingScreenshots() {
 
 window.removeScreenshot = function(i) { pendingScreenshots.splice(i, 1); renderPendingScreenshots(); };
 
-// ═══════════════════════════════════════════════════════
-// LIGHTBOX
-// ═══════════════════════════════════════════════════════
+// ── Lightbox ──
 window.openLightbox = function(analysisId, idx) {
   const a = state.analyses.find(x => x.id === analysisId);
   if (!a || !a.screenshots || !a.screenshots[idx]) return;
@@ -1370,9 +1768,7 @@ window.openLightbox = function(analysisId, idx) {
 };
 window.closeLightbox = function() { document.getElementById('lightbox').style.display = 'none'; };
 
-// ═══════════════════════════════════════════════════════
-// TOAST
-// ═══════════════════════════════════════════════════════
+// ── Toast ──
 let toastTimer;
 function showToast(msg, type = 'success') {
   const toast = document.getElementById('toast');
@@ -1383,31 +1779,24 @@ function showToast(msg, type = 'success') {
   toastTimer = setTimeout(() => toast.style.display = 'none', 3000);
 }
 
-// ═══════════════════════════════════════════════════════
-// HELPERS
-// ═══════════════════════════════════════════════════════
+// ── Helpers ──
 function formatDate(ds) {
   if (!ds) return '';
   return new Date(ds + 'T00:00:00').toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
 }
 
-// AUTO-FILL TRADINGVIEW URL
+// Auto-fill TV URL
 document.getElementById('pair-symbol').addEventListener('input', function() {
   const sym = this.value.trim().toUpperCase();
   const tvUrl = document.getElementById('pair-tv-url');
-  if (!tvUrl.dataset.manuallyEdited) {
-    tvUrl.value = sym ? `https://www.tradingview.com/chart/?symbol=${sym}` : '';
-  }
+  if (!tvUrl.dataset.manuallyEdited) tvUrl.value = sym ? `https://www.tradingview.com/chart/?symbol=${sym}` : '';
 });
+document.getElementById('pair-tv-url').addEventListener('input', function() { this.dataset.manuallyEdited = 'true'; });
 
-document.getElementById('pair-tv-url').addEventListener('input', function() {
-  this.dataset.manuallyEdited = 'true';
-});
 // Close modals on overlay click
-['pair-modal','analysis-modal','user-modal'].forEach(id => {
+['pair-modal','analysis-modal','user-modal','rule-modal'].forEach(id => {
   document.getElementById(id).addEventListener('click', function(e) { if (e.target === this) this.style.display = 'none'; });
 });
-
 </script>
 </body>
 </html>
