@@ -1391,6 +1391,18 @@ function formatDate(ds) {
   return new Date(ds + 'T00:00:00').toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
 }
 
+// AUTO-FILL TRADINGVIEW URL
+document.getElementById('pair-symbol').addEventListener('input', function() {
+  const sym = this.value.trim().toUpperCase();
+  const tvUrl = document.getElementById('pair-tv-url');
+  if (!tvUrl.dataset.manuallyEdited) {
+    tvUrl.value = sym ? `https://www.tradingview.com/chart/?symbol=${sym}` : '';
+  }
+});
+
+document.getElementById('pair-tv-url').addEventListener('input', function() {
+  this.dataset.manuallyEdited = 'true';
+});
 // Close modals on overlay click
 ['pair-modal','analysis-modal','user-modal'].forEach(id => {
   document.getElementById(id).addEventListener('click', function(e) { if (e.target === this) this.style.display = 'none'; });
