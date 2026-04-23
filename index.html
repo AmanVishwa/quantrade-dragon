@@ -1256,7 +1256,7 @@ window.openAddUser = function() {
 
 window.closeUserModal = function() { document.getElementById('user-modal').style.display = 'none'; };
 
-window.saveUser = async function() {
+ window.saveUser = async function() {
   const fullname = document.getElementById('user-fullname').value.trim();
   const email = document.getElementById('user-email').value.trim();
   const password = document.getElementById('user-password').value;
@@ -1269,14 +1269,28 @@ window.saveUser = async function() {
   btn.textContent = 'Creating...'; btn.disabled = true;
 
   try {
-    // Create user in Firebase Auth using a secondary app instance to avoid signing out admin
-    const secondaryApp = initializeApp(firebaseConfig, 'Secondary');
-    const secondaryAuth = getAuth(secondaryApp);
-    const userCred = await createUserWithEmailAndPassword(secondaryAuth, email, password);
-    const newUid = userCred.user.uid;
-    await signOut(secondaryAuth);
+    // Step 1: Create user via REST API (keeps admin logged in)
+    const signupRes = await fetch(
+      `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${firebaseConfig.apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, returnSecureToken: true })
+      }
+    );
+    const signupData = await signupRes.json();
 
-    // Save profile in Firestore
+    if (!signupRes.ok) {
+      const errCode = signupData.error?.message || '';
+      if (errCode.includes('EMAIL_EXISTS')) showToast('Email already in use', 'error');
+      else showToast('Error: ' + errCode, 'error');
+      btn.textContent = 'Create User'; btn.disabled = false;
+      return;
+    }
+
+    const newUid = signupData.localId;
+
+    // Step 2: Save profile in Firestore as admin
     await setDoc(doc(db, 'users', newUid), {
       fullname: fullname || email.split('@')[0],
       email,
@@ -1284,7 +1298,7 @@ window.saveUser = async function() {
       createdAt: new Date().toISOString().split('T')[0]
     });
 
-    // Seed default pairs for new user
+    // Step 3: Seed default pairs for new user
     const newState = { pairs: DEFAULT_PAIRS.map(p => ({ ...p, id: p.id + '_' + newUid })), analyses: [] };
     await setDoc(doc(db, 'userdata', newUid), newState);
 
@@ -1292,9 +1306,10 @@ window.saveUser = async function() {
     window.closeUserModal();
     renderAdminPanel();
   } catch(e) {
-    if (e.code === 'auth/email-already-in-use') showToast('Email already in use', 'error');
-    else showToast('Error creating user: ' + e.message, 'error');
+    console.error(e);
+    showToast('Error creating user: ' + e.message, 'error');
   }
+
   btn.textContent = 'Create User'; btn.disabled = false;
 };
 
