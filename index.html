@@ -2638,11 +2638,14 @@ async function renderAdminPanel(){
       const isCurrentUser=uid===currentUser.uid;
       const tr=document.createElement('tr');
       tr.innerHTML=`
-        <td><div style="font-weight:600;color:var(--text-primary)">${d.fullname||d.displayname||'—'}</div></td>
+        <td><div style="font-weight:600;color:var(--text-primary)">${d.displayname||d.fullname||'—'}</div></td>
         <td style="font-size:12px;color:var(--text-muted)">${d.email||'—'}</td>
         <td><span class="user-role-badge ${d.role==='admin'?'role-admin':'role-user'}">${(d.role||'user').toUpperCase()}</span></td>
         <td style="color:var(--text-muted);font-size:12px">${d.createdAt||'—'}</td>
-        <td>${!isCurrentUser?`<button class="btn btn-sm btn-danger" onclick="window.deleteUserAccount('${uid}','${d.email||''}')">Remove</button>`:'<span style="font-size:11px;color:var(--text-muted)">You</span>'}</td>
+        <td>${!isCurrentUser
+          ?`<button class="btn btn-sm btn-danger" onclick="window.deleteUserAccount('${uid}','${d.email||''}')">Remove</button>`
+          :'<span style="font-size:11px;color:var(--text-muted)">You</span>'
+        }</td>
       `;
       tbody.appendChild(tr);
     });
@@ -2651,6 +2654,7 @@ async function renderAdminPanel(){
       <div style="color:var(--red);margin-bottom:8px">Could not load users. Check Firestore rules.</div>
       <div style="color:var(--text-muted);font-size:12px">${e.message}</div>
     </td></tr>`;
+    console.error('Admin load error:',e);
   }
 }
 
