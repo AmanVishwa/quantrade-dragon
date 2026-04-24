@@ -2626,41 +2626,31 @@ async function renderAdminPanel(){
   const tbody=document.getElementById('user-table-body');
   tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:24px">Loading users...</td></tr>';
   try {
-    const idToken=await currentUser.getIdToken();
-    const projectId=firebaseConfig.projectId;
-    const res=await fetch(`https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/users?pageSize=100`,{
-      headers:{Authorization:`Bearer ${idToken}`}
-    });
-    if(!res.ok) throw new Error('Forbidden');
-    const data=await res.json();
+    const usersSnap = await getDocs(collection(db,'users'));
     tbody.innerHTML='';
-    const docs=data.documents||[];
-    if(!docs.length){
+    if(usersSnap.empty){
       tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:24px">No users found.</td></tr>';
       return;
     }
-    docs.forEach(docData=>{
-      const uid=docData.name.split('/').pop();
-      const fields=docData.fields||{};
-      const getStr=f=>fields[f]?.stringValue||'—';
-      const fullname=getStr('fullname'),email=getStr('email'),role=getStr('role'),createdAt=getStr('createdAt');
+    usersSnap.forEach(docSnap=>{
+      const uid=docSnap.id;
+      const d=docSnap.data();
       const isCurrentUser=uid===currentUser.uid;
       const tr=document.createElement('tr');
       tr.innerHTML=`
-        <td><div style="font-weight:600;color:var(--text-primary)">${fullname}</div></td>
-        <td style="font-size:12px;color:var(--text-muted)">${email}</td>
-        <td><span class="user-role-badge ${role==='admin'?'role-admin':'role-user'}">${role.toUpperCase()}</span></td>
-        <td style="color:var(--text-muted);font-size:12px">${createdAt}</td>
-        <td>${!isCurrentUser?`<button class="btn btn-sm btn-danger" onclick="window.deleteUserAccount('${uid}','${email}')">Remove</button>`:'<span style="font-size:11px;color:var(--text-muted)">You</span>'}</td>
+        <td><div style="font-weight:600;color:var(--text-primary)">${d.fullname||d.displayname||'—'}</div></td>
+        <td style="font-size:12px;color:var(--text-muted)">${d.email||'—'}</td>
+        <td><span class="user-role-badge ${d.role==='admin'?'role-admin':'role-user'}">${(d.role||'user').toUpperCase()}</span></td>
+        <td style="color:var(--text-muted);font-size:12px">${d.createdAt||'—'}</td>
+        <td>${!isCurrentUser?`<button class="btn btn-sm btn-danger" onclick="window.deleteUserAccount('${uid}','${d.email||''}')">Remove</button>`:'<span style="font-size:11px;color:var(--text-muted)">You</span>'}</td>
       `;
       tbody.appendChild(tr);
     });
   } catch(e) {
     tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;padding:24px">
-      <div style="color:var(--red);margin-bottom:8px">Could not load users via REST API.</div>
-      <div style="color:var(--text-muted);font-size:12px">Ensure Firestore rules allow admin reads, or check your Firebase project ID.</div>
+      <div style="color:var(--red);margin-bottom:8px">Could not load users. Check Firestore rules.</div>
+      <div style="color:var(--text-muted);font-size:12px">${e.message}</div>
     </td></tr>`;
-    console.error('Admin load error:',e);
   }
 }
 
