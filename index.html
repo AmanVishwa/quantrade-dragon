@@ -2674,6 +2674,7 @@ window.saveUser=async function(){
   const btn=document.getElementById('create-user-btn');
   btn.textContent='Creating...';btn.disabled=true;
   try {
+    // Step 1: Create Firebase Auth user
     const signupRes=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${firebaseConfig.apiKey}`,{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({email,password,returnSecureToken:true})
@@ -2685,12 +2686,30 @@ window.saveUser=async function(){
       btn.textContent='Create User';btn.disabled=false;return;
     }
     const newUid=signupData.localId;
-    await setDoc(doc(db,'users',newUid),{fullname:fullname||email.split('@')[0],email,role,createdAt:new Date().toISOString().split('T')[0]});
-    const newState={pairs:DEFAULT_PAIRS.map(p=>({...p,id:p.id+'_'+newUid})),analyses:[],rules:DEFAULT_RULES,gamification:{xp:0,streak:0,lastLogDate:'',longestStreak:0,weeklyTradeGoal:5,winRateGoal:60}};
+
+    // Step 2: Write user profile to Firestore
+    await setDoc(doc(db,'users',newUid),{
+      fullname:fullname||email.split('@')[0],
+      email,role,
+      createdAt:new Date().toISOString().split('T')[0]
+    });
+
+    // Step 3: Write default userdata
+    const newState={
+      pairs:DEFAULT_PAIRS.map(p=>({...p,id:p.id+'_'+newUid})),
+      analyses:[],
+      rules:DEFAULT_RULES,
+      gamification:{xp:0,streak:0,lastLogDate:'',longestStreak:0,weeklyTradeGoal:5,winRateGoal:60}
+    };
     await setDoc(doc(db,'userdata',newUid),newState);
-    showToast(`User ${email} created!`);
-    window.closeUserModal();renderAdminPanel();
-  } catch(e){showToast('Error: '+e.message,'error');}
+
+    showToast(`User ${email} created successfully!`,'success');
+    window.closeUserModal();
+    renderAdminPanel();
+  } catch(e){
+    console.error('Create user error:',e);
+    showToast('Error: '+e.message,'error');
+  }
   btn.textContent='Create User';btn.disabled=false;
 };
 window.deleteUserAccount=async function(uid,email){
