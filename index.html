@@ -862,7 +862,7 @@ textarea.form-control { resize:vertical; min-height:90px; line-height:1.6; }
       <!-- LOG -->
       <div class="page" id="page-log">
         <div class="filter-bar" id="log-filter-bar">
-          <input type="text" class="form-control" id="log-search" placeholder="Search pair, session, FOMO, setup, notes..." oninput="renderLog()" style="min-width:240px">
+          <input type="text" class="form-control" id="log-search" placeholder="Search pair, session, FOMO, setup, notes..." oninput="renderLog()" onkeyup="renderLog()" style="min-width:240px"> 
           <select class="form-control" id="log-pair-filter" style="width:auto" onchange="renderLog()">
             <option value="">All Pairs</option>
           </select>
@@ -873,16 +873,17 @@ textarea.form-control { resize:vertical; min-height:90px; line-height:1.6; }
           <button class="filter-chip" data-filter="Loss" onclick="setFilter(this,'Loss')">Losses</button>
         </div>
         <div class="filter-bar" style="margin-top:-12px">
-          <div class="date-filter-wrap">
-            <label>From</label>
-            <input type="date" class="form-control date-input" id="log-date-from" oninput="renderLog()">
-          </div>
-          <div class="date-filter-wrap">
-            <label>To</label>
-            <input type="date" class="form-control date-input" id="log-date-to" oninput="renderLog()">
-          </div>
-          <button class="btn btn-sm" onclick="clearDateFilter()">Clear Dates</button>
-        </div>
+           <div class="date-filter-wrap">
+             <label>From</label>
+             <input type="date" class="form-control date-input" id="log-date-from">
+           </div>
+           <div class="date-filter-wrap">
+             <label>To</label>
+             <input type="date" class="form-control date-input" id="log-date-to">
+           </div>
+           <button class="btn btn-sm btn-primary" onclick="applyDateFilter()">Apply</button>
+           <button class="btn btn-sm" onclick="clearDateFilter()">Clear Dates</button>
+         </div>
         <div id="log-list"></div>
       </div>
 
@@ -1968,6 +1969,10 @@ window.setFilter=function(el,filter){
   logFilter=filter;
   document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
   el.classList.add('active');
+  renderLog();
+};
+
+window.applyDateFilter=function(){
   renderLog();
 };
 window.clearDateFilter=function(){
