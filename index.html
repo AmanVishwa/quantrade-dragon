@@ -1451,6 +1451,17 @@ async function bootApp(user) {
   const profileSnap = await getDoc(profileRef);
   if(profileSnap.exists()){
     currentUserProfile = profileSnap.data();
+    // Block disabled users
+    if(currentUserProfile.disabled === true){
+      await signOut(auth);
+      document.getElementById('loading-screen').style.display='none';
+      document.getElementById('login-screen').style.display='flex';
+      document.getElementById('app').style.display='none';
+      const errEl=document.getElementById('login-error');
+      errEl.textContent='Your account has been disabled. Contact admin.';
+      errEl.style.display='block';
+      return;
+    }
   } else {
     currentUserProfile = {fullname:user.email.split('@')[0],email:user.email,role:'user',createdAt:new Date().toISOString().split('T')[0]};
     await setDoc(profileRef,currentUserProfile);
@@ -2635,6 +2646,7 @@ async function renderAdminPanel(){
     usersSnap.forEach(docSnap=>{
       const uid=docSnap.id;
       const d=docSnap.data();
+      if(d.disabled === true) return; 
       const isCurrentUser=uid===currentUser.uid;
       const tr=document.createElement('tr');
       tr.innerHTML=`
@@ -2713,12 +2725,24 @@ window.saveUser=async function(){
   btn.textContent='Create User';btn.disabled=false;
 };
 window.deleteUserAccount=async function(uid,email){
-  if(!confirm(`Remove user ${email}? This removes their profile and data.`)) return;
+  if(!confirm(`Remove user ${email}?\n\nThis will disable their account and delete their data. They will not be able to login again.`)) return;
   try{
-    await deleteDoc(doc(db,'users',uid));
+    // Mark as disabled in Firestore (blocks login even if auth account exists)
+    await setDoc(doc(db,'users',uid),{
+      fullname: '—',
+      email: email,
+      role: 'user',
+      disabled: true,
+      disabledAt: new Date().toISOString().split('T')[0]
+    });
+    // Delete their trading data
     await deleteDoc(doc(db,'userdata',uid));
-    showToast('User removed');renderAdminPanel();
-  }catch(e){showToast('Error removing user','error');}
+    showToast(`User ${email} removed successfully`,'success');
+    renderAdminPanel();
+  }catch(e){
+    console.error('Delete user error:',e);
+    showToast('Error removing user: '+e.message,'error');
+  }
 };
 
 // ── SCREENSHOTS ──
