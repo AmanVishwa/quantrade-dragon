@@ -1627,9 +1627,26 @@ function renderStreakBanner(){
   const g=state.gamification||{};
   const streak=g.streak||0;
   const today=new Date();
+  const todayStr=today.toISOString().split('T')[0];
+  
+  // Get unique dates that have analyses
+  const loggedDates=new Set(state.analyses.map(a=>a.date));
+  
+  // Build this week's days (Mon to Sun)
   const days=['M','T','W','T','F','S','S'];
-  const todayDow=(today.getDay()+6)%7;
-  const dots=days.map((d,i)=>`<div class="s-dot${i<=todayDow?' done':''}">${d}</div>`).join('');
+  const monday=new Date(today);
+  monday.setDate(today.getDate()-((today.getDay()+6)%7));
+  monday.setHours(0,0,0,0);
+  
+  const dots=days.map((d,i)=>{
+    const day=new Date(monday);
+    day.setDate(monday.getDate()+i);
+    const ds=day.toISOString().split('T')[0];
+    const isFuture=ds>todayStr;
+    const hasLog=loggedDates.has(ds);
+    return`<div class="s-dot${hasLog?' done':''}" title="${ds}" style="${isFuture?'opacity:0.3':''}">${d}</div>`;
+  }).join('');
+  
   document.getElementById('streak-banner-wrap').innerHTML=`
     <div class="streak-banner">
       <div>
@@ -2062,55 +2079,82 @@ function renderAnalytics(){
     return{name:s,wr:completed>0?Math.round((wins/completed)*100):0,total:completed};
   }).filter(s=>s.total>0);
 
-  // Monthly heatmap — last 5 weeks
-  const heatmapDays=[];
-  const today=new Date();
-  for(let i=34;i>=0;i--){
-    const d=new Date(today); d.setDate(today.getDate()-i);
-    const ds=d.toISOString().split('T')[0];
-    const dayAnalyses=analyses.filter(a=>a.date===ds);
-    const wins=dayAnalyses.filter(a=>a.result==='Win').length;
-    const losses=dayAnalyses.filter(a=>a.result==='Loss').length;
-    let cls='empty';
-    if(wins>0&&losses===0) cls='win';
-    else if(losses>0&&wins===0) cls='loss';
-    else if(wins>0&&losses>0) cls='mixed';
-    heatmapDays.push({ds,cls,total:dayAnalyses.length,wins,losses});
-  }
+  // Build proper calendar heatmap — start from Monday of 5 weeks ago
+   const today2=new Date();
+   today2.setHours(0,0,0,0);
+   const todayStr2=today2.toISOString().split('T')[0];
+   
+   // Find the Monday 5 weeks ago
+   const startDay=new Date(today2);
+   const dayOfWeek=(today2.getDay()+6)%7; // 0=Mon
+   startDay.setDate(today2.getDate()-dayOfWeek-(4*7)); // go back to Monday 5 weeks ago
+   
+   const heatmapDays=[];
+   const heatmapMonths=[];
+   let lastMonth='';
+   for(let i=0;i<35;i++){
+     const d=new Date(startDay);
+     d.setDate(startDay.getDate()+i);
+     const ds=d.toISOString().split('T')[0];
+     const month=d.toLocaleDateString('en-GB',{month:'short'});
+     const dayNum=d.getDate();
+     const isFuture=ds>todayStr2;
+     const dayAnalyses=analyses.filter(a=>a.date===ds);
+     const wins=dayAnalyses.filter(a=>a.result==='Win').length;
+     const losses=dayAnalyses.filter(a=>a.result==='Loss').length;
+     let cls='empty';
+     if(!isFuture){
+       if(wins>0&&losses===0) cls='win';
+       else if(losses>0&&wins===0) cls='loss';
+       else if(wins>0&&losses>0) cls='mixed';
+     }
+     if(month!==lastMonth){heatmapMonths.push({idx:i,month});lastMonth=month;}
+     heatmapDays.push({ds,cls,total:dayAnalyses.length,wins,losses,dayNum,isFuture,month,dayOfWeek:i%7});
+   }
+   
+   // Build month labels row
+   const monthLabels=Array(35).fill('');
+   heatmapMonths.forEach(m=>{monthLabels[m.idx]=m.month;});
+   const monthLabelHtml=monthLabels.map((m,i)=>
+     `<div style="grid-column:${i+1};font-family:var(--font-mono);font-size:8px;color:var(--text-muted);text-align:center">${m}</div>`
+   ).join('');
 
   const isDark=document.documentElement.getAttribute('data-theme')!=='light';
   const textColor=isDark?'#8b8fa8':'#4a4f65';
   const gridColor=isDark?'#23272f':'#e0e4ef';
 
   document.getElementById('analytics-content').innerHTML=`
-    <div class="charts-grid">
-      <div class="chart-card" style="grid-column:1/-1">
-        <div class="chart-card-title">Equity Curve (Trade-by-Trade)</div>
-        <div class="chart-container"><canvas id="equity-chart"></canvas></div>
-      </div>
-    </div>
-    <div class="charts-grid">
-      <div class="chart-card">
-        <div class="chart-card-title">Mistake Frequency</div>
-        ${topMistakes.length?`<div class="chart-container"><canvas id="mistake-chart"></canvas></div>`:`<div class="empty-state" style="padding:32px"><p>No mistakes tagged yet.</p></div>`}
-      </div>
-      <div class="chart-card">
-        <div class="chart-card-title">Session Win Rate Breakdown</div>
-        ${sessionData.length?`<div class="session-breakdown" id="session-breakdown"></div>`:`<div class="empty-state" style="padding:32px"><p>Log trades with sessions to see breakdown.</p></div>`}
-      </div>
-    </div>
-    <div class="chart-card" style="margin-bottom:16px">
-      <div class="chart-card-title">Monthly Performance Calendar (Last 5 Weeks)</div>
-      <div class="heatmap-labels">${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>`<div class="heatmap-lbl">${d}</div>`).join('')}</div>
-      <div class="heatmap-grid" id="heatmap-grid"></div>
-      <div style="display:flex;gap:16px;margin-top:12px;font-size:11px;font-family:var(--font-mono);color:var(--text-muted)">
-        <span><span style="display:inline-block;width:10px;height:10px;background:#00d4aa66;border-radius:2px;margin-right:4px"></span>Win day</span>
-        <span><span style="display:inline-block;width:10px;height:10px;background:#ff4d4d66;border-radius:2px;margin-right:4px"></span>Loss day</span>
-        <span><span style="display:inline-block;width:10px;height:10px;background:#f5a62366;border-radius:2px;margin-right:4px"></span>Mixed</span>
-        <span><span style="display:inline-block;width:10px;height:10px;background:var(--bg-hover);border-radius:2px;margin-right:4px"></span>No trade</span>
-      </div>
-    </div>
-  `;
+     <div class="charts-grid">
+       <div class="chart-card" style="grid-column:1/-1">
+         <div class="chart-card-title">Equity Curve (Trade-by-Trade)</div>
+         <div class="chart-container"><canvas id="equity-chart"></canvas></div>
+       </div>
+     </div>
+     <div class="charts-grid">
+       <div class="chart-card">
+         <div class="chart-card-title">Mistake Frequency</div>
+         ${topMistakes.length?`<div class="chart-container"><canvas id="mistake-chart"></canvas></div>`:`<div class="empty-state" style="padding:32px"><p>No mistakes tagged yet.</p></div>`}
+       </div>
+       <div class="chart-card">
+         <div class="chart-card-title">Session Win Rate Breakdown</div>
+         ${sessionData.length?`<div class="session-breakdown" id="session-breakdown"></div>`:`<div class="empty-state" style="padding:32px"><p>Log trades with sessions to see breakdown.</p></div>`}
+       </div>
+     </div>
+     <div class="chart-card" style="margin-bottom:16px">
+       <div class="chart-card-title">Performance Calendar (Last 5 Weeks)</div>
+       <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px">
+         ${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>`<div style="font-family:var(--font-mono);font-size:8px;color:var(--text-muted);text-align:center">${d}</div>`).join('')}
+       </div>
+       <div class="heatmap-grid" id="heatmap-grid"></div>
+       <div style="display:flex;gap:16px;margin-top:12px;font-size:11px;font-family:var(--font-mono);color:var(--text-muted)">
+         <span><span style="display:inline-block;width:10px;height:10px;background:#00d4aa66;border-radius:2px;margin-right:4px"></span>Win day</span>
+         <span><span style="display:inline-block;width:10px;height:10px;background:#ff4d4d66;border-radius:2px;margin-right:4px"></span>Loss day</span>
+         <span><span style="display:inline-block;width:10px;height:10px;background:#f5a62366;border-radius:2px;margin-right:4px"></span>Mixed</span>
+         <span><span style="display:inline-block;width:10px;height:10px;background:var(--bg-hover);border-radius:2px;margin-right:4px"></span>No trade</span>
+         <span><span style="display:inline-block;width:10px;height:10px;background:var(--border);border-radius:2px;margin-right:4px;opacity:0.3"></span>Future</span>
+       </div>
+     </div>
+   `;
 
   // Destroy old charts
   ['equity-chart','mistake-chart'].forEach(id=>{
@@ -2183,9 +2227,13 @@ function renderAnalytics(){
   // Heatmap
   const hg=document.getElementById('heatmap-grid');
   if(hg){
-    hg.innerHTML=heatmapDays.map(d=>`
-      <div class="heatmap-day ${d.cls}" title="${d.ds}: ${d.total} trade(s)${d.total?' ('+d.wins+'W/'+d.losses+'L)':''}"></div>
-    `).join('');
+    hg.innerHTML=heatmapDays.map(d=>{
+      const opacity=d.isFuture?'opacity:0.15;':'';
+      const dateLabel=`${d.ds} (${d.isFuture?'future':d.total>0?d.wins+'W/'+d.losses+'L':'no trades'})`;
+      return`<div class="heatmap-day ${d.cls}" title="${dateLabel}" style="${opacity}position:relative;">
+        <span style="position:absolute;bottom:1px;right:2px;font-size:6px;color:rgba(255,255,255,0.4);font-family:monospace;line-height:1">${d.dayNum}</span>
+      </div>`;
+    }).join('');
   }
 }
 
