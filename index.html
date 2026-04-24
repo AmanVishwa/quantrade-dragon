@@ -1371,7 +1371,8 @@ function initGamification() {
 }
 function updateStreak() {
   if(!state.gamification) initGamification();
-  const today = new Date().toISOString().split('T')[0];
+  const nowIST=new Date(Date.now()+(330*60000));
+  const today=nowIST.toISOString().split('T')[0];
   const last = state.gamification.lastLogDate;
   if(last===today) return;
   const yesterday = new Date(Date.now()-86400000).toISOString().split('T')[0];
@@ -1626,25 +1627,28 @@ function renderXPBanner(){
 function renderStreakBanner(){
   const g=state.gamification||{};
   const streak=g.streak||0;
-  const today=new Date();
-  const todayStr=today.toISOString().split('T')[0];
+  
+  // IST offset: UTC+5:30 = 330 minutes
+  const nowIST=new Date(Date.now()+(330*60000));
+  const todayStr=nowIST.toISOString().split('T')[0];
   
   // Get unique dates that have analyses
   const loggedDates=new Set(state.analyses.map(a=>a.date));
   
-  // Build this week's days (Mon to Sun)
-  const days=['M','T','W','T','F','S','S'];
-  const monday=new Date(today);
-  monday.setDate(today.getDate()-((today.getDay()+6)%7));
-  monday.setHours(0,0,0,0);
+  // Find Monday of current IST week
+  const monday=new Date(nowIST);
+  const dow=monday.getUTCDay(); // 0=Sun,1=Mon...
+  const diffToMon=dow===0?-6:1-dow; // days back to Monday
+  monday.setUTCDate(monday.getUTCDate()+diffToMon);
   
-  const dots=days.map((d,i)=>{
+  const dayLabels=['M','T','W','T','F','S','S'];
+  const dots=dayLabels.map((d,i)=>{
     const day=new Date(monday);
-    day.setDate(monday.getDate()+i);
+    day.setUTCDate(monday.getUTCDate()+i);
     const ds=day.toISOString().split('T')[0];
     const isFuture=ds>todayStr;
     const hasLog=loggedDates.has(ds);
-    return`<div class="s-dot${hasLog?' done':''}" title="${ds}" style="${isFuture?'opacity:0.3':''}">${d}</div>`;
+    return`<div class="s-dot${hasLog&&!isFuture?' done':''}" title="${ds}" style="${isFuture?'opacity:0.3':''}">${d}</div>`;
   }).join('');
   
   document.getElementById('streak-banner-wrap').innerHTML=`
@@ -2080,21 +2084,21 @@ function renderAnalytics(){
   }).filter(s=>s.total>0);
 
   // Build proper calendar heatmap — start from Monday of 5 weeks ago
-   const today2=new Date();
-   today2.setHours(0,0,0,0);
+   const today2=new Date(Date.now()+(330*60000));
    const todayStr2=today2.toISOString().split('T')[0];
    
    // Find the Monday 5 weeks ago
    const startDay=new Date(today2);
-   const dayOfWeek=(today2.getDay()+6)%7; // 0=Mon
-   startDay.setDate(today2.getDate()-dayOfWeek-(4*7)); // go back to Monday 5 weeks ago
+   const dayOfWeek=today2.getUTCDay();
+   const diffToMon=dayOfWeek===0?-6:1-dayOfWeek;
+   startDay.setUTCDate(today2.getUTCDate()+diffToMon-(4*7));
    
    const heatmapDays=[];
    const heatmapMonths=[];
    let lastMonth='';
    for(let i=0;i<35;i++){
      const d=new Date(startDay);
-     d.setDate(startDay.getDate()+i);
+     d.setUTCDate(startDay.getUTCDate()+i);
      const ds=d.toISOString().split('T')[0];
      const month=d.toLocaleDateString('en-GB',{month:'short'});
      const dayNum=d.getDate();
