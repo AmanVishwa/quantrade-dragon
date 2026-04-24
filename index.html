@@ -875,11 +875,11 @@ textarea.form-control { resize:vertical; min-height:90px; line-height:1.6; }
         <div class="filter-bar" style="margin-top:-12px">
           <div class="date-filter-wrap">
             <label>From</label>
-            <input type="date" class="form-control date-input" id="log-date-from" onchange="renderLog()">
+            <input type="date" class="form-control date-input" id="log-date-from" oninput="renderLog()">
           </div>
           <div class="date-filter-wrap">
             <label>To</label>
-            <input type="date" class="form-control date-input" id="log-date-to" onchange="renderLog()">
+            <input type="date" class="form-control date-input" id="log-date-to" oninput="renderLog()">
           </div>
           <button class="btn btn-sm" onclick="clearDateFilter()">Clear Dates</button>
         </div>
