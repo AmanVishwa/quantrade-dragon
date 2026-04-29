@@ -2620,8 +2620,12 @@ async function fetchLivePrices() {
   if (!tickerList.length) return;
 
   const symbols = tickerList.map(x => x.ticker).join(',');
-  const yahooUrl = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(symbols)}&fields=regularMarketPrice,regularMarketChangePercent`;
-  const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(yahooUrl)}`;
+  
+  // Build Yahoo URL WITHOUT encodeURIComponent on the symbols
+  const yahooUrl = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols}&fields=regularMarketPrice,regularMarketChangePercent`;
+  
+  // Pass the yahoo URL to corsproxy WITHOUT encoding it again
+  const proxyUrl = `https://corsproxy.io/?url=${yahooUrl}`;
 
   try {
     const res = await fetch(proxyUrl);
@@ -2640,7 +2644,6 @@ async function fetchLivePrices() {
 
     injectPriceBadges();
   } catch(e) {
-    // silently fail — last price stays visible, or placeholder shows
     console.warn('Live price fetch failed:', e);
   }
 }
