@@ -3105,7 +3105,7 @@ function renderPairsGrid(container){
     card.dataset.pairId = pair.id;
     card.innerHTML=`
          <!-- TradingView Mini Chart — flush to top -->
-         <div id="tv-chart-${pair.id}" style="margin:-20px -20px 0 -20px;height:180px;overflow:hidden;position:relative;border-radius:16px 16px 0 0">
+         <div id="tv-chart-${pair.id}" style="margin:-20px -20px 0 -20px;height:180px;overflow:hidden;position:relative;border-radius:16px 16px 0 0;pointer-events:none">
            <div class="tradingview-widget-container" style="height:180px">
              <div class="tradingview-widget-container__widget" style="height:180px"></div>
            </div>
