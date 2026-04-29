@@ -133,6 +133,10 @@ body::before {
   from { opacity:0; transform: translateY(16px); }
   to   { opacity:1; transform: translateY(0); }
 }
+@keyframes pricePulse {
+  0%,100% { opacity:1; }
+  50% { opacity:0.3; }
+}   
 
 /* ── LOADING ── */
 #loading-screen {
@@ -2539,7 +2543,113 @@ let state = { pairs:[], analyses:[], rules:[], gamification:{xp:0,streak:0,lastL
 let logFilter = 'all', currentPage = 'overview', currentPairForDetail = null;
 let pendingScreenshots = [], pendingMistakes = [], pendingConfidence = 0;
 let checklistState = {}, chartInstances = {};
+// ── LIVE PRICES (Yahoo Finance via corsproxy) ──
+const YAHOO_MAP = {
+  'EURUSD':'EURUSD=X','GBPUSD':'GBPUSD=X','USDJPY':'USDJPY=X',
+  'USDCHF':'USDCHF=X','AUDUSD':'AUDUSD=X','NZDUSD':'NZDUSD=X',
+  'EURGBP':'EURGBP=X','EURJPY':'EURJPY=X','GBPJPY':'GBPJPY=X',
+  'USDCAD':'USDCAD=X','USDSGD':'USDSGD=X','USDINR':'USDINR=X',
+  'XAUUSD':'GC=F','XAGUSD':'SI=F',
+  'NAS100':'NQ=F','US30':'YM=F','SPX500':'ES=F','GER40':'FDAX=F',
+  'UK100':'Z=F','BTCUSD':'BTC-USD','ETHUSD':'ETH-USD',
+};
 
+let livePrices = {};
+let priceInterval = null;
+
+function formatLivePrice(price, symbol) {
+  if (!price && price !== 0) return '—';
+  const sym = symbol.toUpperCase();
+  const decimals =
+    ['XAUUSD','XAGUSD','NAS100','US30','SPX500','GER40','UK100'].includes(sym) ? 2
+    : sym.includes('JPY') ? 3 : 5;
+  return price.toLocaleString('en-US', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals
+  });
+}
+
+function injectPriceBadges() {
+  document.querySelectorAll('.pair-card[data-pair-id]').forEach(card => {
+    const pairId = card.dataset.pairId;
+    const pair = state.pairs.find(p => p.id === pairId);
+    if (!pair) return;
+    const data = livePrices[pairId];
+    const price = data?.price;
+    const change = data?.change;
+    const isUp = change >= 0;
+    const color = price != null ? (isUp ? 'var(--accent)' : 'var(--red)') : 'var(--text-muted)';
+    const changeStr = change != null
+      ? (isUp ? '+' : '') + change.toFixed(2) + '%'
+      : '';
+
+    let badge = card.querySelector('.live-price-badge');
+    if (!badge) {
+      badge = document.createElement('div');
+      badge.className = 'live-price-badge';
+      badge.style.cssText = `
+        position:absolute; top:14px; right:14px;
+        text-align:right; line-height:1.3;
+      `;
+      card.appendChild(badge);
+    }
+
+    badge.innerHTML = price != null ? `
+      <div style="font-family:var(--font-mono);font-size:13px;font-weight:600;color:${color}">
+        ${formatLivePrice(price, pair.symbol)}
+      </div>
+      <div style="font-size:9px;color:${color};letter-spacing:0.5px;margin-top:2px;opacity:0.85">
+        <span style="display:inline-block;width:5px;height:5px;border-radius:50%;
+          background:${color};margin-right:3px;vertical-align:middle;
+          animation:pricePulse 2s ease-in-out infinite"></span>${changeStr} LIVE
+      </div>
+    ` : `
+      <div style="font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--text-muted)">—</div>
+      <div style="font-size:9px;color:var(--text-muted);letter-spacing:0.5px;margin-top:2px">NO PRICE</div>
+    `;
+  });
+}
+
+async function fetchLivePrices() {
+  if (!state.pairs.length) return;
+
+  const tickerList = state.pairs
+    .map(p => ({ id: p.id, symbol: p.symbol, ticker: YAHOO_MAP[p.symbol.toUpperCase()] }))
+    .filter(x => x.ticker);
+
+  if (!tickerList.length) return;
+
+  const symbols = tickerList.map(x => x.ticker).join(',');
+  const yahooUrl = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(symbols)}&fields=regularMarketPrice,regularMarketChangePercent`;
+  const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(yahooUrl)}`;
+
+  try {
+    const res = await fetch(proxyUrl);
+    const data = await res.json();
+    const quotes = data.quoteResponse?.result || [];
+
+    quotes.forEach(q => {
+      const entry = tickerList.find(x => x.ticker === q.symbol);
+      if (entry) {
+        livePrices[entry.id] = {
+          price: q.regularMarketPrice,
+          change: q.regularMarketChangePercent,
+        };
+      }
+    });
+
+    injectPriceBadges();
+  } catch(e) {
+    // silently fail — last price stays visible, or placeholder shows
+    console.warn('Live price fetch failed:', e);
+  }
+}
+
+function startPricePolling() {
+  if (priceInterval) clearInterval(priceInterval);
+  fetchLivePrices();                              // immediate first fetch
+  priceInterval = setInterval(fetchLivePrices, 10000); // then every 10s
+}
 const DEFAULT_PAIRS = [
   { id:'p_eurusd', symbol:'EURUSD', category:'Forex Major', htfBias:'Bullish', session:'London + NY', tvUrl:'https://www.tradingview.com/chart/?symbol=EURUSD', notes:'', createdAt:Date.now() },
   { id:'p_gbpusd', symbol:'GBPUSD', category:'Forex Major', htfBias:'Bearish', session:'London', tvUrl:'https://www.tradingview.com/chart/?symbol=GBPUSD', notes:'', createdAt:Date.now() },
@@ -2779,8 +2889,9 @@ function animateCounter(el,target,suffix='',decimals=0){
 
 // ── OVERVIEW ──
 function renderOverview(){
-  renderXPBanner();renderStreakBanner();renderGoals();renderTrophyShelf();
-  renderStats();renderBestPair();renderPairsGrid(document.getElementById('pairs-grid'));
+  renderXPBanner(); renderStreakBanner(); renderGoals(); renderTrophyShelf();
+  renderStats(); renderBestPair(); renderPairsGrid(document.getElementById('pairs-grid'));
+  startPricePolling();
 }
 
 function renderXPBanner(){
@@ -2978,6 +3089,7 @@ function renderPairsGrid(container){
     const pillCls=pair.htfBias==='Bullish'?'bull':pair.htfBias==='Bearish'?'bear':'';
     const card=document.createElement('div');
     card.className=`pair-card ${bc}`;
+    card.dataset.pairId = pair.id;
     card.innerHTML=`
       <div class="pair-card-top">
         <div><div class="pair-sym">${pair.symbol}</div><div class="pair-cat">${pair.category}</div></div>
