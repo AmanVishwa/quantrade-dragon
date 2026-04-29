@@ -574,8 +574,8 @@ body.is-admin .nav-item.admin-only { display: flex; }
 .btn-xs { padding: 3px 8px; font-size: 10px; border-radius: 6px; }
 
 /* ── CONTENT ── */
-#content { padding: 32px; flex: 1; }
-
+#content { padding: 32px; padding-bottom: 80px; flex: 1; }
+   
 /* ── SECTION HEADER ── */
 .section-header {
   display: flex;
@@ -1891,6 +1891,7 @@ textarea.form-control { resize: vertical; min-height: 90px; line-height: 1.65; }
   .profile-hero { flex-direction: column; }
   .apex-hero-banner { flex-wrap: wrap; }
   .hero-stats { gap: 16px; }
+  #tv-ticker-wrap { left: 0; }
 }
 
 /* ── PAIR DETAIL ── */
@@ -3889,5 +3890,72 @@ document.addEventListener('keydown',e=>{
   }
 });
 </script>
+
+<!-- TradingView Ticker Tape -->
+<div id="tv-ticker-wrap" style="
+  position:fixed; bottom:0;
+  left:var(--sidebar-w); right:0;
+  z-index:200;
+  background:var(--deep);
+  border-top:1px solid var(--border-1);
+  height:46px;
+">
+  <div class="tradingview-widget-container" id="tv-ticker-container">
+    <div class="tradingview-widget-container__widget"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const theme = localStorage.getItem('tj_theme') === 'light' ? 'light' : 'dark';
+  const script = document.createElement('script');
+  script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js';
+  script.async = true;
+  script.innerHTML = JSON.stringify({
+    symbols: [
+      {proName:"OANDA:EURUSD",   title:"EUR/USD"},
+      {proName:"OANDA:GBPUSD",   title:"GBP/USD"},
+      {proName:"OANDA:USDJPY",   title:"USD/JPY"},
+      {proName:"OANDA:USDCHF",   title:"USD/CHF"},
+      {proName:"OANDA:AUDUSD",   title:"AUD/USD"},
+      {proName:"OANDA:USDCAD",   title:"USD/CAD"},
+      {proName:"OANDA:NZDUSD",   title:"NZD/USD"},
+      {proName:"OANDA:EURGBP",   title:"EUR/GBP"},
+      {proName:"OANDA:EURJPY",   title:"EUR/JPY"},
+      {proName:"OANDA:GBPJPY",   title:"GBP/JPY"},
+      {proName:"OANDA:AUDJPY",   title:"AUD/JPY"},
+      {proName:"OANDA:EURAUD",   title:"EUR/AUD"},
+      {proName:"OANDA:EURCHF",   title:"EUR/CHF"},
+      {proName:"OANDA:EURCAD",   title:"EUR/CAD"},
+      {proName:"OANDA:GBPCHF",   title:"GBP/CHF"},
+      {proName:"OANDA:GBPAUD",   title:"GBP/AUD"},
+      {proName:"OANDA:GBPCAD",   title:"GBP/CAD"},
+      {proName:"OANDA:GBPNZD",   title:"GBP/NZD"},
+      {proName:"OANDA:CADCHF",   title:"CAD/CHF"},
+      {proName:"OANDA:CADJPY",   title:"CAD/JPY"},
+      {proName:"OANDA:AUDCAD",   title:"AUD/CAD"},
+      {proName:"OANDA:AUDCHF",   title:"AUD/CHF"},
+      {proName:"OANDA:AUDNZD",   title:"AUD/NZD"},
+      {proName:"OANDA:NZDJPY",   title:"NZD/JPY"},
+      {proName:"OANDA:NZDCHF",   title:"NZD/CHF"},
+      {proName:"OANDA:NZDCAD",   title:"NZD/CAD"},
+      {proName:"OANDA:CHFJPY",   title:"CHF/JPY"},
+      {proName:"OANDA:XAUUSD",   title:"Gold"},
+      {proName:"OANDA:XAGUSD",   title:"Silver"},
+      {proName:"OANDA:NAS100USD",title:"NAS100"},
+      {proName:"OANDA:US30USD",  title:"US30"},
+      {proName:"NSE:BANKNIFTY",  title:"BANKNIFTY"},
+      {proName:"NSE:NIFTY",      title:"NIFTY 50"}
+    ],
+    showSymbolLogo: true,
+    isTransparent: true,
+    displayMode: "adaptive",
+    colorTheme: theme,
+    locale: "en"
+  });
+  document.getElementById('tv-ticker-container').appendChild(script);
+})();
+</script>
+
 </body>
 </html>
