@@ -2550,115 +2550,115 @@ let logFilter = 'all', currentPage = 'overview', currentPairForDetail = null;
 let pendingScreenshots = [], pendingMistakes = [], pendingConfidence = 0;
 let checklistState = {}, chartInstances = {};
 // ── LIVE PRICES (Yahoo Finance via corsproxy) ──
-const YAHOO_MAP = {
-  'EURUSD':'EURUSD=X','GBPUSD':'GBPUSD=X','USDJPY':'USDJPY=X',
-  'USDCHF':'USDCHF=X','AUDUSD':'AUDUSD=X','NZDUSD':'NZDUSD=X',
-  'EURGBP':'EURGBP=X','EURJPY':'EURJPY=X','GBPJPY':'GBPJPY=X',
-  'USDCAD':'USDCAD=X','USDSGD':'USDSGD=X','USDINR':'USDINR=X',
-  'XAUUSD':'GC=F','XAGUSD':'SI=F',
-  'NAS100':'NQ=F','US30':'YM=F','SPX500':'ES=F','GER40':'FDAX=F',
-  'UK100':'Z=F','BTCUSD':'BTC-USD','ETHUSD':'ETH-USD',
-};
+// const YAHOO_MAP = {
+//   'EURUSD':'EURUSD=X','GBPUSD':'GBPUSD=X','USDJPY':'USDJPY=X',
+//   'USDCHF':'USDCHF=X','AUDUSD':'AUDUSD=X','NZDUSD':'NZDUSD=X',
+//   'EURGBP':'EURGBP=X','EURJPY':'EURJPY=X','GBPJPY':'GBPJPY=X',
+//   'USDCAD':'USDCAD=X','USDSGD':'USDSGD=X','USDINR':'USDINR=X',
+//   'XAUUSD':'GC=F','XAGUSD':'SI=F',
+//   'NAS100':'NQ=F','US30':'YM=F','SPX500':'ES=F','GER40':'FDAX=F',
+//   'UK100':'Z=F','BTCUSD':'BTC-USD','ETHUSD':'ETH-USD',
+// };
 
-let livePrices = {};
-let priceInterval = null;
+// let livePrices = {};
+// let priceInterval = null;
 
-function formatLivePrice(price, symbol) {
-  if (!price && price !== 0) return '—';
-  const sym = symbol.toUpperCase();
-  const decimals =
-    ['XAUUSD','XAGUSD','NAS100','US30','SPX500','GER40','UK100'].includes(sym) ? 2
-    : sym.includes('JPY') ? 3 : 5;
-  return price.toLocaleString('en-US', {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals
-  });
-}
+// function formatLivePrice(price, symbol) {
+//   if (!price && price !== 0) return '—';
+//   const sym = symbol.toUpperCase();
+//   const decimals =
+//     ['XAUUSD','XAGUSD','NAS100','US30','SPX500','GER40','UK100'].includes(sym) ? 2
+//     : sym.includes('JPY') ? 3 : 5;
+//   return price.toLocaleString('en-US', {
+//     minimumFractionDigits: decimals,
+//     maximumFractionDigits: decimals
+//   });
+// }
 
-function injectPriceBadges() {
-  document.querySelectorAll('.pair-card[data-pair-id]').forEach(card => {
-    const pairId = card.dataset.pairId;
-    const pair = state.pairs.find(p => p.id === pairId);
-    if (!pair) return;
-    const data = livePrices[pairId];
-    const price = data?.price;
-    const change = data?.change;
-    const isUp = change >= 0;
-    const color = price != null ? (isUp ? 'var(--jade)' : 'var(--crimson)') : 'var(--text-3)';
-    const changeStr = change != null
-      ? (isUp ? '+' : '') + change.toFixed(2) + '%'
-      : '';
+// function injectPriceBadges() {
+  // document.querySelectorAll('.pair-card[data-pair-id]').forEach(card => {
+  //   const pairId = card.dataset.pairId;
+  //   const pair = state.pairs.find(p => p.id === pairId);
+  //   if (!pair) return;
+  //   const data = livePrices[pairId];
+  //   const price = data?.price;
+  //   const change = data?.change;
+  //   const isUp = change >= 0;
+  //   const color = price != null ? (isUp ? 'var(--jade)' : 'var(--crimson)') : 'var(--text-3)';
+  //   const changeStr = change != null
+  //     ? (isUp ? '+' : '') + change.toFixed(2) + '%'
+  //     : '';
 
-    let badge = card.querySelector('.live-price-badge');
-    if (!badge) {
-      badge = document.createElement('div');
-      badge.className = 'live-price-badge';
-      badge.style.cssText = `
-        position:absolute; top:14px; right:14px;
-        text-align:right; line-height:1.3;
-      `;
-      card.appendChild(badge);
-    }
+  //   let badge = card.querySelector('.live-price-badge');
+  //   if (!badge) {
+  //     badge = document.createElement('div');
+  //     badge.className = 'live-price-badge';
+  //     badge.style.cssText = `
+  //       position:absolute; top:14px; right:14px;
+  //       text-align:right; line-height:1.3;
+  //     `;
+  //     card.appendChild(badge);
+  //   }
 
-    badge.innerHTML = price != null ? `
-      <div style="font-family:var(--font-mono);font-size:13px;font-weight:600;color:${color}">
-        ${formatLivePrice(price, pair.symbol)}
-      </div>
-      <div style="font-size:9px;color:${color};letter-spacing:0.5px;margin-top:2px;opacity:0.85">
-        <span style="display:inline-block;width:5px;height:5px;border-radius:50%;
-          background:${color};margin-right:3px;vertical-align:middle;
-          animation:pricePulse 2s ease-in-out infinite"></span>${changeStr} LIVE
-      </div>
-    ` : `
-      <div style="font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--text-3)">—</div>
-      <div style="font-size:9px;color:var(--text-muted);letter-spacing:0.5px;margin-top:2px">NO PRICE</div>
-    `;
-  });
-}
+  //   badge.innerHTML = price != null ? `
+  //     <div style="font-family:var(--font-mono);font-size:13px;font-weight:600;color:${color}">
+  //       ${formatLivePrice(price, pair.symbol)}
+  //     </div>
+  //     <div style="font-size:9px;color:${color};letter-spacing:0.5px;margin-top:2px;opacity:0.85">
+  //       <span style="display:inline-block;width:5px;height:5px;border-radius:50%;
+  //         background:${color};margin-right:3px;vertical-align:middle;
+  //         animation:pricePulse 2s ease-in-out infinite"></span>${changeStr} LIVE
+  //     </div>
+  //   ` : `
+  //     <div style="font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--text-3)">—</div>
+  //     <div style="font-size:9px;color:var(--text-muted);letter-spacing:0.5px;margin-top:2px">NO PRICE</div>
+  //   `;
+  // });
+// }
 
-async function fetchLivePrices() {
-  if (!state.pairs.length) return;
+// async function fetchLivePrices() {
+//   if (!state.pairs.length) return;
 
-  const tickerList = state.pairs
-    .map(p => ({ id: p.id, symbol: p.symbol, ticker: YAHOO_MAP[p.symbol.toUpperCase()] }))
-    .filter(x => x.ticker);
+//   const tickerList = state.pairs
+//     .map(p => ({ id: p.id, symbol: p.symbol, ticker: YAHOO_MAP[p.symbol.toUpperCase()] }))
+//     .filter(x => x.ticker);
 
-  if (!tickerList.length) return;
+//   if (!tickerList.length) return;
 
-  // v8 chart endpoint — fetch each pair individually (no auth needed)
-  const results = await Promise.allSettled(
-    tickerList.map(async ({ id, symbol, ticker }) => {
-      const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1m&range=1d`;
-      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(yahooUrl)}`;
-      const res = await fetch(proxyUrl);
-      const wrapper = await res.json();
-      const data = JSON.parse(wrapper.contents);
-      const meta = data.chart.result[0].meta;
-      return {
-        id,
-        price: meta.regularMarketPrice,
-        change: ((meta.regularMarketPrice - meta.chartPreviousClose) / meta.chartPreviousClose) * 100
-      };
-    })
-  );
+//   // v8 chart endpoint — fetch each pair individually (no auth needed)
+//   const results = await Promise.allSettled(
+//     tickerList.map(async ({ id, symbol, ticker }) => {
+//       const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1m&range=1d`;
+//       const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(yahooUrl)}`;
+//       const res = await fetch(proxyUrl);
+//       const wrapper = await res.json();
+//       const data = JSON.parse(wrapper.contents);
+//       const meta = data.chart.result[0].meta;
+//       return {
+//         id,
+//         price: meta.regularMarketPrice,
+//         change: ((meta.regularMarketPrice - meta.chartPreviousClose) / meta.chartPreviousClose) * 100
+//       };
+//     })
+//   );
 
-  results.forEach(r => {
-    if (r.status === 'fulfilled') {
-      livePrices[r.value.id] = {
-        price: r.value.price,
-        change: r.value.change
-      };
-    }
-  });
+//   results.forEach(r => {
+//     if (r.status === 'fulfilled') {
+//       livePrices[r.value.id] = {
+//         price: r.value.price,
+//         change: r.value.change
+//       };
+//     }
+//   });
 
-  injectPriceBadges();
-}
+//   injectPriceBadges();
+// }
 
-function startPricePolling() {
-  if (priceInterval) clearInterval(priceInterval);
-  fetchLivePrices();                              // immediate first fetch
-  priceInterval = setInterval(fetchLivePrices, 10000); // then every 10s
-}
+// function startPricePolling() {
+//   if (priceInterval) clearInterval(priceInterval);
+//   fetchLivePrices();                              // immediate first fetch
+//   priceInterval = setInterval(fetchLivePrices, 10000); // then every 10s
+// }
 const DEFAULT_PAIRS = [
   { id:'p_eurusd', symbol:'EURUSD', category:'Forex Major', htfBias:'Bullish', session:'London + NY', tvUrl:'https://www.tradingview.com/chart/?symbol=EURUSD', notes:'', createdAt:Date.now() },
   { id:'p_gbpusd', symbol:'GBPUSD', category:'Forex Major', htfBias:'Bearish', session:'London', tvUrl:'https://www.tradingview.com/chart/?symbol=GBPUSD', notes:'', createdAt:Date.now() },
@@ -2904,7 +2904,7 @@ function animateCounter(el,target,suffix='',decimals=0){
 function renderOverview(){
   renderXPBanner(); renderStreakBanner(); renderGoals(); renderTrophyShelf();
   renderStats(); renderBestPair(); renderPairsGrid(document.getElementById('pairs-grid'));
-  startPricePolling();
+  // startPricePolling();
 }
 
 function renderXPBanner(){
