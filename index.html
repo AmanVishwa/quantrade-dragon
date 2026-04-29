@@ -1751,6 +1751,22 @@ textarea.form-control { resize: vertical; min-height: 90px; line-height: 1.65; }
 .m-tag:hover { border-color: var(--text-3); color: var(--text-1); }
 .m-tag.active { background: var(--crimson-dim); border-color: rgba(255,61,92,0.3); color: var(--crimson); }
 
+/* ── EMOTION TAGS ── */
+.e-tag {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border-2);
+  background: transparent;
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  cursor: pointer;
+  transition: all var(--dur-fast);
+  letter-spacing: 0.5px;
+}
+.e-tag:hover { border-color: var(--text-3); color: var(--text-1); }
+.e-tag.active { background: var(--violet-dim); border-color: rgba(167,139,250,0.3); color: var(--violet); }
+
 /* ── CHECKLIST ── */
 .check-rule {
   display: flex;
@@ -2012,6 +2028,14 @@ textarea.form-control { resize: vertical; min-height: 90px; line-height: 1.65; }
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
       My Rules
     </div>
+    <div class="nav-item" data-nav="calendar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
+      Calendar
+    </div>
+    <div class="nav-item" data-nav="weekly-review">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      Weekly Review
+    </div>
     <div class="nav-item" data-nav="profile">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
       Profile
@@ -2149,6 +2173,22 @@ textarea.form-control { resize: vertical; min-height: 90px; line-height: 1.65; }
           <strong>Rule Checklist</strong> — These rules appear as a pre-trade checklist when logging analyses. Build discipline one session at a time.
         </div>
         <div id="rules-list"></div>
+      </div>
+
+      <!-- ECONOMIC CALENDAR -->
+      <div class="page" id="page-calendar">
+        <div id="calendar-content">
+          <div style="background:var(--elevated);border:1px solid var(--border-1);border-radius:16px;overflow:hidden;height:700px">
+            <div class="tradingview-widget-container" style="height:700px">
+              <div class="tradingview-widget-container__widget" style="height:700px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WEEKLY REVIEW -->
+      <div class="page" id="page-weekly-review">
+        <div id="weekly-review-content"></div>
       </div>
 
       <!-- PROFILE -->
@@ -2306,6 +2346,20 @@ textarea.form-control { resize: vertical; min-height: 90px; line-height: 1.65; }
           </select>
         </div>
       </div>
+      <div class="form-row-3">
+        <div class="form-group">
+          <label class="form-label">P&L (Pips/Points)</label>
+          <input type="number" step="any" class="form-control" id="analysis-pnl-pips" placeholder="e.g. 45 or -20">
+        </div>
+        <div class="form-group">
+          <label class="form-label">P&L ($)</label>
+          <input type="number" step="any" class="form-control" id="analysis-pnl-usd" placeholder="e.g. 120 or -50">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Lot Size</label>
+          <input type="number" step="any" class="form-control" id="analysis-lot-size" placeholder="e.g. 0.10">
+        </div>
+      </div>
       <div class="form-group">
         <label class="form-label">Setup Confidence</label>
         <div style="display:flex;gap:4px;align-items:center" id="conf-stars">
@@ -2330,6 +2384,22 @@ textarea.form-control { resize: vertical; min-height: 90px; line-height: 1.65; }
           <div class="m-tag" onclick="toggleMTag(this,'Ignored HTF')">Ignored HTF</div>
         </div>
         <input type="hidden" id="analysis-mistakes" value="">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Emotional State</label>
+        <div style="display:flex;gap:6px;flex-wrap:wrap" id="emotion-tags-wrap">
+          <div class="e-tag" onclick="toggleETag(this,'Confident')">😎 Confident</div>
+          <div class="e-tag" onclick="toggleETag(this,'Anxious')">😰 Anxious</div>
+          <div class="e-tag" onclick="toggleETag(this,'Calm')">😌 Calm</div>
+          <div class="e-tag" onclick="toggleETag(this,'Greedy')">🤑 Greedy</div>
+          <div class="e-tag" onclick="toggleETag(this,'Fearful')">😨 Fearful</div>
+          <div class="e-tag" onclick="toggleETag(this,'Revenge')">😤 Revenge</div>
+          <div class="e-tag" onclick="toggleETag(this,'Bored')">😑 Bored</div>
+          <div class="e-tag" onclick="toggleETag(this,'Focused')">🎯 Focused</div>
+          <div class="e-tag" onclick="toggleETag(this,'Overconfident')">🦁 Overconfident</div>
+          <div class="e-tag" onclick="toggleETag(this,'Patient')">🧘 Patient</div>
+        </div>
+        <input type="hidden" id="analysis-emotion" value="">
       </div>
       <div class="form-group">
         <label class="form-label">Lesson Learned</label>
@@ -2549,6 +2619,7 @@ let state = { pairs:[], analyses:[], rules:[], gamification:{xp:0,streak:0,lastL
 let logFilter = 'all', currentPage = 'overview', currentPairForDetail = null;
 let pendingScreenshots = [], pendingMistakes = [], pendingConfidence = 0;
 let checklistState = {}, chartInstances = {};
+let pendingEmotion = '';   
 // ── LIVE PRICES (Yahoo Finance via corsproxy) ──
 // const YAHOO_MAP = {
 //   'EURUSD':'EURUSD=X','GBPUSD':'GBPUSD=X','USDJPY':'USDJPY=X',
@@ -2793,8 +2864,9 @@ async function bootApp(user){
     if(!state.analyses) state.analyses=[];
     if(!state.rules) state.rules=DEFAULT_RULES;
     if(!state.gamification) initGamification();
+    if(!state.weeklyReviews) state.weeklyReviews={};
   } else {
-    state={pairs:DEFAULT_PAIRS.map(p=>({...p,id:p.id+'_'+user.uid})),analyses:[],rules:DEFAULT_RULES,gamification:{xp:0,streak:0,lastLogDate:'',longestStreak:0,weeklyTradeGoal:5,winRateGoal:60}};
+    state={pairs:DEFAULT_PAIRS.map(p=>({...p,id:p.id+'_'+user.uid})),analyses:[],rules:DEFAULT_RULES,gamification:{xp:0,streak:0,lastLogDate:'',longestStreak:0,weeklyTradeGoal:5,winRateGoal:60},weeklyReviews:{}};
     await setDoc(dataRef,state);
   }
   updateSidebarUser();navigate('overview');renderSidebarPairs();setupConfidenceStars();
@@ -2841,8 +2913,8 @@ window.navigate=function(page,extra){
   document.getElementById('page-'+page).classList.add('active');
   const navEl=document.querySelector(`[data-nav="${page}"]`);
   if(navEl) navEl.classList.add('active');
-  const titles={overview:'OVERVIEW',log:'ANALYSIS LOG',pairs:'ALL PAIRS','pair-detail':extra?extra.symbol:'PAIR',admin:'USER MANAGEMENT',rules:'MY RULES',profile:'PROFILE',analytics:'ANALYTICS',gallery:'GALLERY'};
-  const subs={overview:'Dashboard',log:'All entries',pairs:'Watchlist','pair-detail':extra?extra.category:'',admin:'Admin',rules:'Discipline system',profile:'Trader identity',analytics:'Performance insights',gallery:'Chart screenshots'};
+  const titles={overview:'OVERVIEW',log:'ANALYSIS LOG',pairs:'ALL PAIRS','pair-detail':extra?extra.symbol:'PAIR',admin:'USER MANAGEMENT',rules:'MY RULES',profile:'PROFILE',analytics:'ANALYTICS',gallery:'GALLERY',calendar:'ECONOMIC CALENDAR','weekly-review':'WEEKLY REVIEW'};
+  const subs={overview:'Dashboard',log:'All entries',pairs:'Watchlist','pair-detail':extra?extra.category:'',admin:'Admin',rules:'Discipline system',profile:'Trader identity',analytics:'Performance insights',gallery:'Chart screenshots',calendar:'Upcoming events & news','weekly-review':'Structured reflection'};
   document.getElementById('topbar-title').textContent=titles[page]||page.toUpperCase();
   document.getElementById('topbar-sub').textContent=subs[page]||'';
   const btn=document.getElementById('primary-action-btn');
@@ -2860,6 +2932,8 @@ window.navigate=function(page,extra){
   if(page==='admin'&&currentUserProfile.role==='admin') renderAdminPanel();
   if(page==='rules') renderRulesPage();
   if(page==='profile') renderProfilePage();
+  if(page==='calendar') renderCalendarPage();
+  if(page==='weekly-review') renderWeeklyReviewPage();
   if(window.innerWidth<=768) document.getElementById('sidebar').classList.remove('open');
 };
 document.querySelectorAll('[data-nav]').forEach(el=>{
@@ -3216,6 +3290,12 @@ function buildAnalysisCard(a){
     const v=Math.abs((parseFloat(a.tp)-parseFloat(a.entry))/(parseFloat(a.entry)-parseFloat(a.sl)));
     if(!isNaN(v)&&isFinite(v)) rr=`<div><div class="af-label">RR Ratio</div><div class="af-val amber">1:${v.toFixed(2)}</div></div>`;
   }
+  const emotionHtml=a.emotion?`<span style="font-family:var(--font-mono);font-size:10px;padding:3px 10px;border-radius:12px;background:var(--violet-dim);color:var(--violet);border:1px solid rgba(167,139,250,0.2)">${a.emotion}</span>`:'';
+  const pnlHtml=(a.pnlUsd||a.pnlPips)?`<div style="display:flex;gap:10px;margin-top:8px">
+    ${a.pnlUsd?`<span style="font-family:var(--font-mono);font-size:11px;color:${parseFloat(a.pnlUsd)>=0?'var(--jade)':'var(--crimson)'}">$${parseFloat(a.pnlUsd)>=0?'+':''}${parseFloat(a.pnlUsd).toFixed(2)}</span>`:''}
+    ${a.pnlPips?`<span style="font-family:var(--font-mono);font-size:11px;color:${parseFloat(a.pnlPips)>=0?'var(--jade)':'var(--crimson)'};">${parseFloat(a.pnlPips)>=0?'+':''}${a.pnlPips} pips</span>`:''}
+    ${a.lotSize?`<span style="font-family:var(--font-mono);font-size:11px;color:var(--text-4)">Lot: ${a.lotSize}</span>`:''}
+  </div>`:'';
   const confStars=a.confidence>0?`<div class="conf-stars">${[1,2,3,4,5].map(i=>`<span class="conf-star-d${i<=a.confidence?' lit':''}">${i<=a.confidence?'★':'☆'}</span>`).join('')}</div>`:'';
   const mistakeTags=a.mistakes&&a.mistakes.length>0?`<div class="mistake-chips">${a.mistakes.map(m=>`<span class="mistake-chip">${m}</span>`).join('')}</div>`:'';
   const qeMap={Win:'qe-win',Loss:'qe-loss',Pending:'qe-pend',Breakeven:'qe-be'};
@@ -3240,6 +3320,8 @@ function buildAnalysisCard(a){
           ${a.session?`<span class="badge badge-neu">${a.session}</span>`:''}
         </div>
         ${confStars}
+        ${emotionHtml}
+        ${pnlHtml}
       </div>
     </div>
     ${(a.entry||a.sl||a.tp)?`<div class="analysis-fields">
@@ -3406,9 +3488,57 @@ function renderAnalytics(){
         <span><span class="hm-dot" style="background:var(--raised)"></span>No trade</span>
       </div>
     </div>
+  <!-- P&L Section -->
+    <div class="charts-grid" style="margin-top:0">
+      <div class="chart-card">
+        <div class="chart-title">P&L Curve (USD)</div>
+        <div class="chart-box"><canvas id="pnl-chart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Emotion vs Win Rate</div>
+        <div id="emotion-breakdown" class="session-bars" style="padding-top:8px"></div>
+      </div>
+    </div>
+
+    <!-- Time of Day Heatmap -->
+    <div class="heatmap-wrap" style="margin-bottom:20px">
+      <div class="chart-title">Best Time of Day — Win Rate by Hour</div>
+      <div id="tod-heatmap" style="margin-top:14px"></div>
+      <div class="hm-legend" style="margin-top:12px">
+        <span><span class="hm-dot" style="background:rgba(0,229,184,0.8)"></span>High WR (60%+)</span>
+        <span><span class="hm-dot" style="background:rgba(255,176,32,0.7)"></span>Medium (40-60%)</span>
+        <span><span class="hm-dot" style="background:rgba(255,61,92,0.7)"></span>Low (&lt;40%)</span>
+        <span><span class="hm-dot" style="background:var(--raised)"></span>No data</span>
+      </div>
+    </div>
   `;
 
   ['equity-chart','mistake-chart'].forEach(id=>{if(chartInstances[id]){chartInstances[id].destroy();delete chartInstances[id];}});
+
+  // ── P&L Curve ──
+  const pnlData=sorted.filter(a=>a.pnlUsd).map((a,i,arr)=>{
+    const cumPnl=arr.slice(0,i+1).reduce((s,x)=>s+(parseFloat(x.pnlUsd)||0),0);
+    return{date:a.date,pnl:parseFloat(a.pnlUsd)||0,cumPnl};
+  });
+
+  // ── Emotion Win Rate ──
+  const emotionMap={};
+  analyses.forEach(a=>{
+    if(!a.emotion) return;
+    if(!emotionMap[a.emotion]) emotionMap[a.emotion]={wins:0,total:0};
+    emotionMap[a.emotion].total++;
+    if(a.result==='Win') emotionMap[a.emotion].wins++;
+  });
+
+  // ── Time of Day ──
+  const hourMap={};
+  analyses.forEach(a=>{
+    if(!a.session) return;
+    const hourKey=a.session;
+    if(!hourMap[hourKey]) hourMap[hourKey]={wins:0,total:0};
+    hourMap[hourKey].total++;
+    if(a.result==='Win') hourMap[hourKey].wins++;
+  });
 
   if(equityData.length){
     const ctx=document.getElementById('equity-chart').getContext('2d');
@@ -3429,6 +3559,80 @@ function renderAnalytics(){
       data:{labels:topMistakes.map(m=>m[0]),datasets:[{label:'Count',data:topMistakes.map(m=>m[1]),backgroundColor:'rgba(255,61,92,0.3)',borderColor:'#ff3d5c',borderWidth:1,borderRadius:6}]},
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:textColor,font:{size:10}},grid:{display:false}},y:{ticks:{color:textColor,font:{size:10}},grid:{color:gridColor}}}}
     });
+  }
+
+  // P&L Chart
+  if(pnlData.length){
+    const pnlCtx=document.getElementById('pnl-chart')?.getContext('2d');
+    if(pnlCtx){
+      const grad=pnlCtx.createLinearGradient(0,0,0,200);
+      grad.addColorStop(0,'rgba(167,139,250,0.2)');
+      grad.addColorStop(1,'rgba(167,139,250,0)');
+      chartInstances['pnl-chart']=new Chart(pnlCtx,{
+        type:'line',
+        data:{
+          labels:pnlData.map(d=>formatDate(d.date)),
+          datasets:[{
+            label:'Cumulative P&L',
+            data:pnlData.map(d=>d.cumPnl),
+            borderColor:'#a78bfa',
+            backgroundColor:grad,
+            borderWidth:2,fill:true,tension:0.4,
+            pointRadius:4,pointBackgroundColor:'#a78bfa',pointHoverRadius:6
+          }]
+        },
+        options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:textColor,font:{size:10,family:'DM Mono'}},grid:{color:gridColor}},y:{ticks:{color:textColor,font:{size:10,family:'DM Mono'},callback:v=>'$'+v},grid:{color:gridColor}}}}
+      });
+    }
+  }
+
+  // Emotion breakdown
+  const emotionEl=document.getElementById('emotion-breakdown');
+  if(emotionEl){
+    const emotionEntries=Object.entries(emotionMap).sort((a,b)=>b[1].total-a[1].total);
+    if(emotionEntries.length===0){
+      emotionEl.innerHTML=`<div style="text-align:center;padding:28px;color:var(--text-4);font-family:var(--font-mono);font-size:11px">No emotion data yet.<br>Tag emotions when logging trades.</div>`;
+    } else {
+      emotionEl.innerHTML=emotionEntries.map(([emotion,data])=>{
+        const wr=Math.round((data.wins/data.total)*100);
+        const color=wr>=60?'var(--jade)':wr>=40?'var(--amber)':'var(--crimson)';
+        return`<div class="s-row">
+          <div class="s-name" style="width:130px">${emotion} <span style="color:var(--text-4)">(${data.total})</span></div>
+          <div class="s-bar-bg"><div class="s-bar-fill" style="width:${wr}%;background:${color}"></div></div>
+          <div class="s-pct" style="color:${color}">${wr}%</div>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // Time of Day heatmap
+  const todEl=document.getElementById('tod-heatmap');
+  if(todEl){
+    const sessions=['Asian','London','London Kill Zone','London + NY','New York','NY Kill Zone'];
+    const allHours=analyses.map(a=>a.session).filter(Boolean);
+    if(allHours.length===0){
+      todEl.innerHTML=`<div style="text-align:center;padding:28px;color:var(--text-4);font-family:var(--font-mono);font-size:11px">No session data yet.</div>`;
+    } else {
+      todEl.innerHTML=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px">
+        ${sessions.map(session=>{
+          const data=hourMap[session]||{wins:0,total:0};
+          if(data.total===0) return`<div style="background:var(--raised);border-radius:10px;padding:12px;text-align:center;border:1px solid var(--border-2)">
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-4);margin-bottom:6px">${session.replace(' Kill Zone',' KZ').replace(' + NY',' +NY')}</div>
+            <div style="font-family:var(--font-display);font-size:22px;color:var(--text-4)">—</div>
+            <div style="font-family:var(--font-mono);font-size:8px;color:var(--text-4);margin-top:4px">No trades</div>
+          </div>`;
+          const wr=Math.round((data.wins/data.total)*100);
+          const bg=wr>=60?'rgba(0,229,184,0.12)':wr>=40?'rgba(255,176,32,0.1)':'rgba(255,61,92,0.1)';
+          const border=wr>=60?'rgba(0,229,184,0.25)':wr>=40?'rgba(255,176,32,0.2)':'rgba(255,61,92,0.2)';
+          const color=wr>=60?'var(--jade)':wr>=40?'var(--amber)':'var(--crimson)';
+          return`<div style="background:${bg};border-radius:10px;padding:12px;text-align:center;border:1px solid ${border}">
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-3);margin-bottom:6px">${session.replace(' Kill Zone',' KZ').replace(' + NY',' +NY')}</div>
+            <div style="font-family:var(--font-display);font-size:28px;color:${color}">${wr}%</div>
+            <div style="font-family:var(--font-mono);font-size:8px;color:var(--text-4);margin-top:4px">${data.wins}W / ${data.total-data.wins}L</div>
+          </div>`;
+        }).join('')}
+      </div>`;
+    }
   }
 
   if(sessionData.length){
@@ -3578,6 +3782,170 @@ function renderProfilePage(){
     `).join('');
   }
 }
+// ── ECONOMIC CALENDAR ──
+function renderCalendarPage(){
+  const isDark=document.documentElement.getAttribute('data-theme')!=='light';
+  const calWrap=document.querySelector('#page-calendar .tradingview-widget-container');
+  if(!calWrap||calWrap.dataset.loaded) return;
+  calWrap.dataset.loaded='true';
+  const script=document.createElement('script');
+  script.src='https://s3.tradingview.com/external-embedding/embed-widget-events.js';
+  script.async=true;
+  script.textContent=JSON.stringify({
+    colorTheme: isDark?'dark':'light',
+    isTransparent: true,
+    width: '100%',
+    height: '700',
+    locale: 'en',
+    importanceFilter: '-1,0,1',
+    countryFilter: 'us,eu,gb,jp,au,ca,ch,cn,nz'
+  });
+  calWrap.appendChild(script);
+}
+
+// ── WEEKLY REVIEW ──
+function renderWeeklyReviewPage(){
+  const now=new Date();
+  const monday=new Date(now);
+  monday.setDate(now.getDate()-((now.getDay()+6)%7));
+  monday.setHours(0,0,0,0);
+  const sunday=new Date(monday);sunday.setDate(monday.getDate()+6);
+  const weekKey='review_'+monday.toISOString().split('T')[0];
+  const saved=state.weeklyReviews?state.weeklyReviews[weekKey]||{}:{};
+
+  const weekAnalyses=state.analyses.filter(a=>{
+    const d=new Date(a.date+'T00:00:00');
+    return d>=monday&&d<=sunday;
+  });
+  const wins=weekAnalyses.filter(a=>a.result==='Win').length;
+  const losses=weekAnalyses.filter(a=>a.result==='Loss').length;
+  const completed=wins+losses;
+  const wr=completed>0?Math.round((wins/completed)*100):0;
+  const totalPnl=weekAnalyses.reduce((sum,a)=>sum+(parseFloat(a.pnlUsd)||0),0);
+  const emotions=[...new Set(weekAnalyses.map(a=>a.emotion).filter(Boolean))];
+
+  // Past reviews list
+  const pastReviews=state.weeklyReviews?Object.entries(state.weeklyReviews).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,8):[];
+
+  document.getElementById('weekly-review-content').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start">
+      <div>
+        <!-- Week Stats -->
+        <div style="background:var(--elevated);border:1px solid var(--border-1);border-radius:16px;padding:24px;margin-bottom:20px">
+          <div style="font-family:var(--font-mono);font-size:8px;letter-spacing:3px;color:var(--jade);text-transform:uppercase;margin-bottom:4px">Current Week Review</div>
+          <div style="font-family:var(--font-display);font-size:22px;letter-spacing:2px;margin-bottom:16px">${monday.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})} — ${sunday.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+            <div style="background:var(--raised);border-radius:10px;padding:14px;text-align:center">
+              <div style="font-family:var(--font-display);font-size:28px;color:var(--jade)">${weekAnalyses.length}</div>
+              <div style="font-family:var(--font-mono);font-size:8px;color:var(--text-4);letter-spacing:1px;margin-top:2px">TRADES</div>
+            </div>
+            <div style="background:var(--raised);border-radius:10px;padding:14px;text-align:center">
+              <div style="font-family:var(--font-display);font-size:28px;color:${wr>=50?'var(--jade)':'var(--crimson)'}">${wr}%</div>
+              <div style="font-family:var(--font-mono);font-size:8px;color:var(--text-4);letter-spacing:1px;margin-top:2px">WIN RATE</div>
+            </div>
+            <div style="background:var(--raised);border-radius:10px;padding:14px;text-align:center">
+              <div style="font-family:var(--font-display);font-size:28px;color:${totalPnl>=0?'var(--jade)':'var(--crimson)'}">${totalPnl>=0?'+':''}$${totalPnl.toFixed(0)}</div>
+              <div style="font-family:var(--font-mono);font-size:8px;color:var(--text-4);letter-spacing:1px;margin-top:2px">P&L</div>
+            </div>
+            <div style="background:var(--raised);border-radius:10px;padding:14px;text-align:center">
+              <div style="font-size:20px">${emotions.length>0?emotions[0]:'—'}</div>
+              <div style="font-family:var(--font-mono);font-size:8px;color:var(--text-4);letter-spacing:1px;margin-top:2px">TOP EMOTION</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Review Form -->
+        <div style="background:var(--elevated);border:1px solid var(--border-1);border-radius:16px;padding:24px;margin-bottom:20px">
+          <div style="font-family:var(--font-display);font-size:16px;letter-spacing:2px;margin-bottom:20px">WEEKLY REFLECTION</div>
+
+          <div class="form-group">
+            <label class="form-label">⭐ What went well this week?</label>
+            <textarea class="form-control" id="wr-went-well" rows="3" placeholder="Setups you executed well, discipline maintained, goals achieved...">${saved.wentWell||''}</textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">❌ What went wrong or needs improvement?</label>
+            <textarea class="form-control" id="wr-went-wrong" rows="3" placeholder="Mistakes repeated, rules broken, emotional decisions...">${saved.wentWrong||''}</textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">📚 Key lesson learned this week</label>
+            <textarea class="form-control" id="wr-lesson" rows="2" placeholder="The single most important thing you learned...">${saved.lesson||''}</textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">🎯 Goals for next week</label>
+            <textarea class="form-control" id="wr-goals-next" rows="3" placeholder="Specific, measurable goals for next week...">${saved.goalsNext||''}</textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">🧠 Mental state & psychology notes</label>
+            <textarea class="form-control" id="wr-psychology" rows="2" placeholder="How was your mindset? Stress levels? Life factors affecting trading?">${saved.psychology||''}</textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Overall Week Grade</label>
+            <div style="display:flex;gap:8px" id="week-grade-wrap">
+              ${['A','B','C','D','F'].map(g=>`<button class="filter-chip${(saved.grade||'')=== g?' active':''}" onclick="setWeekGrade('${g}',this)" style="width:44px;justify-content:center">${g}</button>`).join('')}
+            </div>
+            <input type="hidden" id="wr-grade" value="${saved.grade||''}">
+          </div>
+          <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px" onclick="saveWeeklyReview('${weekKey}')">
+            💾 Save Weekly Review
+          </button>
+        </div>
+      </div>
+
+      <!-- Past Reviews Sidebar -->
+      <div>
+        <div style="background:var(--elevated);border:1px solid var(--border-1);border-radius:16px;padding:20px">
+          <div style="font-family:var(--font-mono);font-size:8px;letter-spacing:3px;color:var(--text-4);text-transform:uppercase;margin-bottom:14px">Past Reviews</div>
+          ${pastReviews.length===0?`<div style="text-align:center;padding:28px 0;color:var(--text-4);font-family:var(--font-mono);font-size:11px">No reviews yet</div>`:''}
+          ${pastReviews.map(([key,rev])=>{
+            const dateStr=key.replace('review_','');
+            const gradeColor={A:'var(--jade)',B:'var(--jade)',C:'var(--amber)',D:'var(--crimson)',F:'var(--crimson)'}[rev.grade]||'var(--text-3)';
+            return`<div style="background:var(--raised);border-radius:10px;padding:12px;margin-bottom:8px;border:1px solid var(--border-2);cursor:pointer" onclick="loadPastReview('${key}')">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-3)">${dateStr}</div>
+                ${rev.grade?`<span style="font-family:var(--font-display);font-size:18px;color:${gradeColor}">${rev.grade}</span>`:''}
+              </div>
+              ${rev.lesson?`<div style="font-size:11px;color:var(--text-2);line-height:1.5;max-height:40px;overflow:hidden">${rev.lesson}</div>`:''}
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+window.setWeekGrade=function(grade,el){
+  document.querySelectorAll('#week-grade-wrap .filter-chip').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('wr-grade').value=grade;
+};
+
+window.saveWeeklyReview=function(weekKey){
+  if(!state.weeklyReviews) state.weeklyReviews={};
+  state.weeklyReviews[weekKey]={
+    wentWell:document.getElementById('wr-went-well').value.trim(),
+    wentWrong:document.getElementById('wr-went-wrong').value.trim(),
+    lesson:document.getElementById('wr-lesson').value.trim(),
+    goalsNext:document.getElementById('wr-goals-next').value.trim(),
+    psychology:document.getElementById('wr-psychology').value.trim(),
+    grade:document.getElementById('wr-grade').value,
+    savedAt:Date.now()
+  };
+  saveState();showToast('Weekly review saved!','success');
+  renderWeeklyReviewPage();
+};
+
+window.loadPastReview=function(weekKey){
+  const rev=state.weeklyReviews?.[weekKey];if(!rev) return;
+  document.getElementById('wr-went-well').value=rev.wentWell||'';
+  document.getElementById('wr-went-wrong').value=rev.wentWrong||'';
+  document.getElementById('wr-lesson').value=rev.lesson||'';
+  document.getElementById('wr-goals-next').value=rev.goalsNext||'';
+  document.getElementById('wr-psychology').value=rev.psychology||'';
+  document.getElementById('wr-grade').value=rev.grade||'';
+  document.querySelectorAll('#week-grade-wrap .filter-chip').forEach(b=>b.classList.toggle('active',b.textContent===rev.grade));
+  showToast('Past review loaded');
+};
+
 window.openProfileModal=function(){
   const p=currentUserProfile;
   document.getElementById('profile-displayname').value=p.displayname||p.fullname||'';
@@ -3682,7 +4050,10 @@ window.openAddAnalysis=function(pairId){
   document.getElementById('analysis-result').value='Pending';
   document.getElementById('analysis-confidence').value='0';
   document.getElementById('analysis-mistakes').value='';
-  resetConfidenceStars();resetMistakeTags();renderModalChecklist();
+  resetConfidenceStars();resetMistakeTags();resetEmotionTags();renderModalChecklist();
+  document.getElementById('analysis-pnl-pips').value='';
+  document.getElementById('analysis-pnl-usd').value='';
+  document.getElementById('analysis-lot-size').value='';
   document.getElementById('analysis-modal').style.display='flex';
 };
 window.editAnalysis=function(id){
@@ -3690,6 +4061,7 @@ window.editAnalysis=function(id){
   pendingScreenshots=[...(a.screenshots||[])];
   pendingMistakes=[...(a.mistakes||[])];
   pendingConfidence=a.confidence||0;
+  pendingEmotion = a.emotion || '';
   document.getElementById('analysis-edit-id').value=id;
   document.getElementById('analysis-modal-title').textContent='EDIT ANALYSIS';
   const pairSel=document.getElementById('analysis-pair');
@@ -3709,6 +4081,10 @@ window.editAnalysis=function(id){
   document.getElementById('analysis-confidence').value=pendingConfidence;
   document.getElementById('analysis-mistakes').value=pendingMistakes.join(',');
   setConfidenceStars(pendingConfidence);restoreMistakeTags(pendingMistakes);
+  restoreEmotionTags(pendingEmotion);
+  document.getElementById('analysis-pnl-pips').value=a.pnlPips||'';
+  document.getElementById('analysis-pnl-usd').value=a.pnlUsd||'';
+  document.getElementById('analysis-lot-size').value=a.lotSize||'';
   renderPendingScreenshots();renderModalChecklist();
   document.getElementById('analysis-modal').style.display='flex';
 };
@@ -3720,7 +4096,7 @@ window.saveAnalysis=function(){
   const editId=document.getElementById('analysis-edit-id').value;
   const isNew=!editId;
   const result=document.getElementById('analysis-result').value;
-  const data={pairId,date,bias:document.getElementById('analysis-bias').value,timeframe:document.getElementById('analysis-tf').value,session:document.getElementById('analysis-session').value,entry:document.getElementById('analysis-entry').value,sl:document.getElementById('analysis-sl').value,tp:document.getElementById('analysis-tp').value,setup:document.getElementById('analysis-setup').value,result,notes:document.getElementById('analysis-notes').value.trim(),lesson:document.getElementById('analysis-lesson').value.trim(),confidence:pendingConfidence,mistakes:[...pendingMistakes],screenshots:[...pendingScreenshots]};
+  const data={pairId,date,bias:document.getElementById('analysis-bias').value,timeframe:document.getElementById('analysis-tf').value,session:document.getElementById('analysis-session').value,entry:document.getElementById('analysis-entry').value,sl:document.getElementById('analysis-sl').value,tp:document.getElementById('analysis-tp').value,setup:document.getElementById('analysis-setup').value,result,notes:document.getElementById('analysis-notes').value.trim(),lesson:document.getElementById('analysis-lesson').value.trim(),confidence:pendingConfidence,mistakes:[...pendingMistakes],screenshots:[...pendingScreenshots],pnlPips:document.getElementById('analysis-pnl-pips').value,pnlUsd:document.getElementById('analysis-pnl-usd').value,lotSize:document.getElementById('analysis-lot-size').value,emotion:pendingEmotion}; 
   if(editId){const idx=state.analyses.findIndex(a=>a.id===editId);if(idx>-1) state.analyses[idx]={...state.analyses[idx],...data};showToast('Analysis updated');}
   else{
     state.analyses.unshift({id:'a_'+Date.now(),createdAt:Date.now(),pinned:false,...data});
@@ -3802,6 +4178,20 @@ window.toggleMTag=function(el,tag){
 };
 function resetMistakeTags(){pendingMistakes=[];document.querySelectorAll('.m-tag').forEach(t=>t.classList.remove('active'));}
 function restoreMistakeTags(mistakes){document.querySelectorAll('.m-tag').forEach(t=>t.classList.toggle('active',mistakes.includes(t.textContent.trim())));}
+
+// ── EMOTION TAGS ──
+window.toggleETag=function(el,emotion){
+  document.querySelectorAll('.e-tag').forEach(t=>t.classList.remove('active'));
+  if(pendingEmotion===emotion){pendingEmotion='';document.getElementById('analysis-emotion').value='';}
+  else{el.classList.add('active');pendingEmotion=emotion;document.getElementById('analysis-emotion').value=emotion;}
+};
+function resetEmotionTags(){pendingEmotion='';document.querySelectorAll('.e-tag').forEach(t=>t.classList.remove('active'));}
+function restoreEmotionTags(emotion){
+  pendingEmotion=emotion||'';
+  document.querySelectorAll('.e-tag').forEach(t=>{
+    t.classList.toggle('active',t.textContent.trim().includes(emotion)&&emotion!='');
+  });
+}
 
 // ── EXPORT CSV ──
 window.exportCSV=function(){
