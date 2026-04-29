@@ -2619,33 +2619,33 @@ async function fetchLivePrices() {
 
   if (!tickerList.length) return;
 
-  const symbols = tickerList.map(x => x.ticker).join(',');
-  
-  // Build Yahoo URL WITHOUT encodeURIComponent on the symbols
-  const yahooUrl = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols}&fields=regularMarketPrice,regularMarketChangePercent`;
-  
-  // Pass the yahoo URL to corsproxy WITHOUT encoding it again
-  const proxyUrl = `https://corsproxy.io/?url=${yahooUrl}`;
+  // v8 chart endpoint — fetch each pair individually (no auth needed)
+  const results = await Promise.allSettled(
+    tickerList.map(async ({ id, symbol, ticker }) => {
+      const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1m&range=1d`;
+      const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(yahooUrl)}`;
+      const res = await fetch(proxyUrl);
+      const wrapper = await res.json();
+      const data = JSON.parse(wrapper.contents);
+      const meta = data.chart.result[0].meta;
+      return {
+        id,
+        price: meta.regularMarketPrice,
+        change: ((meta.regularMarketPrice - meta.chartPreviousClose) / meta.chartPreviousClose) * 100
+      };
+    })
+  );
 
-  try {
-    const res = await fetch(proxyUrl);
-    const data = await res.json();
-    const quotes = data.quoteResponse?.result || [];
+  results.forEach(r => {
+    if (r.status === 'fulfilled') {
+      livePrices[r.value.id] = {
+        price: r.value.price,
+        change: r.value.change
+      };
+    }
+  });
 
-    quotes.forEach(q => {
-      const entry = tickerList.find(x => x.ticker === q.symbol);
-      if (entry) {
-        livePrices[entry.id] = {
-          price: q.regularMarketPrice,
-          change: q.regularMarketChangePercent,
-        };
-      }
-    });
-
-    injectPriceBadges();
-  } catch(e) {
-    console.warn('Live price fetch failed:', e);
-  }
+  injectPriceBadges();
 }
 
 function startPricePolling() {
