@@ -269,7 +269,7 @@ body::before {
   flex-direction: column;
   z-index: 100;
   transition: transform var(--dur-slow) var(--ease);
-  /* overflow-y: auto;   */
+  overflow: hidden; 
 }
 
 /* Sidebar glow accent */
@@ -395,11 +395,14 @@ body::before {
 body.is-admin .nav-item.admin-only { display: flex; }
 
 .sb-pairs-list {
+  padding-bottom: 8px;
+}
+.sb-scroll-area {
   flex: 1;
   overflow-y: auto;
-  padding-bottom: 8px;
-  min-height: 60px;  
-}
+  overflow-x: hidden;
+  min-height: 0;
+}   
 .pair-nav-item {
   display: flex;
   align-items: center;
@@ -1991,6 +1994,7 @@ textarea.form-control { resize: vertical; min-height: 90px; line-height: 1.65; }
 
   <!-- SIDEBAR -->
   <nav id="sidebar">
+   <div class="sb-scroll-area">
     <div class="sb-brand">
       <div class="sb-logo-mark">ICT / SMC</div>
       <div class="sb-logo-title">APEX</div>
@@ -2047,9 +2051,9 @@ textarea.form-control { resize: vertical; min-height: 90px; line-height: 1.65; }
       Users
     </div>
 
-    <div class="sb-section-label">Watchlist</div>
+    <div class="sb-section-label">Watchlist</div> 
     <div class="sb-pairs-list" id="sidebar-pairs"></div>
-
+   </div>
     <div class="sb-footer">
       <button class="sb-add-btn" onclick="openAddPair()">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
