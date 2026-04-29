@@ -14,6 +14,7 @@
 ═══════════════════════════════════════════════════════ */
 :root {
   /* Core palette */
+  --font-weight-base: 700; 
   --void: #060608;
   --deep: #0a0b0f;
   --surface: #0f1118;
@@ -35,7 +36,7 @@
   --sapphire-dim: rgba(77,143,255,0.1);
   --violet: #a78bfa;
   --violet-dim: rgba(167,139,250,0.1);
-
+   
   /* Typography */
   --text-1: #f0f2f8;
   --text-2: #c8d0e8;   /* was #8891aa */
@@ -96,6 +97,7 @@
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 html { scroll-behavior:smooth; }
 body {
+  font-weight: var(--font-weight-base); 
   background: var(--void);
   color: var(--text-1);
   font-family: var(--font-body);
