@@ -2578,7 +2578,7 @@ function injectPriceBadges() {
     const price = data?.price;
     const change = data?.change;
     const isUp = change >= 0;
-    const color = price != null ? (isUp ? 'var(--accent)' : 'var(--red)') : 'var(--text-muted)';
+    const color = price != null ? (isUp ? 'var(--jade)' : 'var(--crimson)') : 'var(--text-3)';
     const changeStr = change != null
       ? (isUp ? '+' : '') + change.toFixed(2) + '%'
       : '';
@@ -2604,7 +2604,7 @@ function injectPriceBadges() {
           animation:pricePulse 2s ease-in-out infinite"></span>${changeStr} LIVE
       </div>
     ` : `
-      <div style="font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--text-muted)">—</div>
+      <div style="font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--text-3)">—</div>
       <div style="font-size:9px;color:var(--text-muted);letter-spacing:0.5px;margin-top:2px">NO PRICE</div>
     `;
   });
@@ -3094,25 +3094,34 @@ function renderPairsGrid(container){
     card.className=`pair-card ${bc}`;
     card.dataset.pairId = pair.id;
     card.innerHTML=`
-      <div class="pair-card-header">
-        <div>
-          <div class="pair-symbol">${pair.symbol}</div>
-          <div class="pair-category">${pair.category}</div>
-          ${pair.htfBias?`<div style="margin-top:6px"><span class="badge ${bcc}">${pair.htfBias}</span></div>`:''}
-        </div>
-        <div></div>
-      </div>
-      <div class="pair-card-meta">
-        ${pair.session?`<span class="meta-pill">${pair.session}</span>`:''}
-        <span class="meta-pill">${analyses.length} entries</span>
-      </div>
-      <div class="pair-card-stats">
-        <div class="pair-stat"><div class="pair-stat-val ${typeof wr==='number'&&wr>=50?'green':typeof wr==='number'?'red':''}">${typeof wr==='number'?wr+'%':wr}</div><div class="pair-stat-lbl">Win Rate</div></div>
-        <div class="pair-stat"><div class="pair-stat-val green">${wins}</div><div class="pair-stat-lbl">Wins</div></div>
-        <div class="pair-stat"><div class="pair-stat-val red">${losses}</div><div class="pair-stat-lbl">Losses</div></div>
-      </div>
-      ${pair.tvUrl?`<a class="tv-link" href="${pair.tvUrl}" target="_blank" rel="noopener"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14l4 4 6-7"/></svg>Open Chart</a>`:''}
-    `;
+     <div class="pair-card-top">
+       <div>
+         <div class="pair-sym">${pair.symbol}</div>
+         <div class="pair-cat">${pair.category}</div>
+         ${pair.htfBias?`<div style="margin-top:8px"><span class="badge ${pair.htfBias==='Bullish'?'badge-bull':pair.htfBias==='Bearish'?'badge-bear':'badge-neu'}">${pair.htfBias}</span></div>`:''}
+       </div>
+       <div></div>
+     </div>
+     <div class="pair-pills">
+       ${pair.session?`<span class="pill">${pair.session}</span>`:''}
+       <span class="pill">${analyses.length} entries</span>
+     </div>
+     <div class="pair-card-bottom">
+       <div class="pair-metric">
+         <div class="pair-metric-val ${typeof wr==='number'&&wr>=50?'jade':typeof wr==='number'?'crimson':''}">${typeof wr==='number'?wr+'%':wr}</div>
+         <div class="pair-metric-lbl">Win Rate</div>
+       </div>
+       <div class="pair-metric">
+         <div class="pair-metric-val jade">${wins}</div>
+         <div class="pair-metric-lbl">Wins</div>
+       </div>
+       <div class="pair-metric">
+         <div class="pair-metric-val crimson">${losses}</div>
+         <div class="pair-metric-lbl">Losses</div>
+       </div>
+     </div>
+     ${pair.tvUrl?`<a class="tv-link" href="${pair.tvUrl}" target="_blank" rel="noopener"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14l4 4 6-7"/></svg>Open Chart</a>`:''}
+   `;
     card.addEventListener('click',e=>{if(e.target.closest('.tv-link'))return;window.navigate('pair-detail',pair);});
     container.appendChild(card);
   });
