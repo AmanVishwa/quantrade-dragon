@@ -575,6 +575,10 @@ body.is-admin .nav-item.admin-only { display: flex; }
 
 /* ── CONTENT ── */
 #content { padding: 32px; padding-bottom: 80px; flex: 1; }
+#login-screen ~ #tv-ticker-wrap,
+#loading-screen:not([style*="none"]) ~ #tv-ticker-wrap {
+  display: none;
+}   
    
 /* ── SECTION HEADER ── */
 .section-header {
@@ -981,6 +985,7 @@ body.is-admin .nav-item.admin-only { display: flex; }
   gap: 14px;
 }
 .pair-card {
+  min-height: 320px; 
   background: var(--elevated);
   border: 1px solid var(--border-1);
   border-radius: 16px;
@@ -2739,6 +2744,8 @@ function showLoginScreen(){
   document.getElementById('loading-screen').style.display='none';
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('app').style.display='none';
+  const ticker = document.getElementById('tv-ticker-wrap');
+  if(ticker) ticker.style.display='none';
 }
 
 window.doLogin=async function(){
@@ -2791,6 +2798,8 @@ async function bootApp(user){
     await setDoc(dataRef,state);
   }
   updateSidebarUser();navigate('overview');renderSidebarPairs();setupConfidenceStars();
+  const ticker = document.getElementById('tv-ticker-wrap');
+  if(ticker) ticker.style.display='block';
 }
 
 function updateSidebarUser(){
@@ -3095,34 +3104,54 @@ function renderPairsGrid(container){
     card.className=`pair-card ${bc}`;
     card.dataset.pairId = pair.id;
     card.innerHTML=`
-     <div class="pair-card-top">
-       <div>
-         <div class="pair-sym">${pair.symbol}</div>
-         <div class="pair-cat">${pair.category}</div>
-         ${pair.htfBias?`<div style="margin-top:8px"><span class="badge ${pair.htfBias==='Bullish'?'badge-bull':pair.htfBias==='Bearish'?'badge-bear':'badge-neu'}">${pair.htfBias}</span></div>`:''}
-       </div>
-       <div></div>
-     </div>
-     <div class="pair-pills">
-       ${pair.session?`<span class="pill">${pair.session}</span>`:''}
-       <span class="pill">${analyses.length} entries</span>
-     </div>
-     <div class="pair-card-bottom">
-       <div class="pair-metric">
-         <div class="pair-metric-val ${typeof wr==='number'&&wr>=50?'jade':typeof wr==='number'?'crimson':''}">${typeof wr==='number'?wr+'%':wr}</div>
-         <div class="pair-metric-lbl">Win Rate</div>
-       </div>
-       <div class="pair-metric">
-         <div class="pair-metric-val jade">${wins}</div>
-         <div class="pair-metric-lbl">Wins</div>
-       </div>
-       <div class="pair-metric">
-         <div class="pair-metric-val crimson">${losses}</div>
-         <div class="pair-metric-lbl">Losses</div>
-       </div>
-     </div>
-     ${pair.tvUrl?`<a class="tv-link" href="${pair.tvUrl}" target="_blank" rel="noopener"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14l4 4 6-7"/></svg>Open Chart</a>`:''}
-   `;
+      <div class="pair-card-top">
+          <div>
+            <div class="pair-sym">${pair.symbol}</div>
+            <div class="pair-cat">${pair.category}</div>
+            ${pair.htfBias?`<div style="margin-top:8px"><span class="badge ${pair.htfBias==='Bullish'?'badge-bull':pair.htfBias==='Bearish'?'badge-bear':'badge-neu'}">${pair.htfBias}</span></div>`:''}
+          </div>
+          <div style="text-align:right">
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-4);letter-spacing:1px;margin-bottom:4px">${analyses.length} ENTRIES</div>
+            ${pair.session?`<div style="font-family:var(--font-mono);font-size:9px;color:var(--text-3)">${pair.session}</div>`:''}
+          </div>
+         </div>
+         
+         <!-- TradingView Mini Chart -->
+         <div style="margin:12px -20px;height:160px;overflow:hidden;position:relative">
+          <div class="tradingview-widget-container" style="height:160px">
+            <div class="tradingview-widget-container__widget" style="height:160px"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+            {
+              "symbol": "${getTVSymbol(pair.symbol)}",
+              "width": "100%",
+              "height": "160",
+              "locale": "en",
+              "dateRange": "1D",
+              "colorTheme": "${localStorage.getItem('tj_theme')==='light'?'light':'dark'}",
+              "isTransparent": true,
+              "autosize": true,
+              "largeChartUrl": "${pair.tvUrl||''}"
+            }
+            </script>
+          </div>
+         </div>
+         
+         <div class="pair-card-bottom">
+          <div class="pair-metric">
+            <div class="pair-metric-val ${typeof wr==='number'&&wr>=50?'jade':typeof wr==='number'?'crimson':''}">${typeof wr==='number'?wr+'%':wr}</div>
+            <div class="pair-metric-lbl">Win Rate</div>
+          </div>
+          <div class="pair-metric">
+            <div class="pair-metric-val jade">${wins}</div>
+            <div class="pair-metric-lbl">Wins</div>
+          </div>
+          <div class="pair-metric">
+            <div class="pair-metric-val crimson">${losses}</div>
+            <div class="pair-metric-lbl">Losses</div>
+          </div>
+         </div>
+         ${pair.tvUrl?`<a class="tv-link" href="${pair.tvUrl}" target="_blank" rel="noopener"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14l4 4 6-7"/></svg>Open Chart</a>`:''}
+         `;
     card.addEventListener('click',e=>{if(e.target.closest('.tv-link'))return;window.navigate('pair-detail',pair);});
     container.appendChild(card);
   });
@@ -3868,6 +3897,25 @@ function showToast(msg,type='success'){
 }
 
 // ── HELPERS ──
+function getTVSymbol(symbol) {
+  const map = {
+    'EURUSD':'OANDA:EURUSD', 'GBPUSD':'OANDA:GBPUSD', 'USDJPY':'OANDA:USDJPY',
+    'USDCHF':'OANDA:USDCHF', 'AUDUSD':'OANDA:AUDUSD', 'USDCAD':'OANDA:USDCAD',
+    'NZDUSD':'OANDA:NZDUSD', 'EURGBP':'OANDA:EURGBP', 'EURJPY':'OANDA:EURJPY',
+    'GBPJPY':'OANDA:GBPJPY', 'AUDJPY':'OANDA:AUDJPY', 'EURAUD':'OANDA:EURAUD',
+    'EURCHF':'OANDA:EURCHF', 'EURCAD':'OANDA:EURCAD', 'GBPCHF':'OANDA:GBPCHF',
+    'GBPAUD':'OANDA:GBPAUD', 'GBPCAD':'OANDA:GBPCAD', 'GBPNZD':'OANDA:GBPNZD',
+    'CADCHF':'OANDA:CADCHF', 'CADJPY':'OANDA:CADJPY', 'AUDCAD':'OANDA:AUDCAD',
+    'AUDCHF':'OANDA:AUDCHF', 'AUDNZD':'OANDA:AUDNZD', 'NZDJPY':'OANDA:NZDJPY',
+    'NZDCHF':'OANDA:NZDCHF', 'NZDCAD':'OANDA:NZDCAD', 'CHFJPY':'OANDA:CHFJPY',
+    'XAUUSD':'OANDA:XAUUSD', 'XAGUSD':'OANDA:XAGUSD',
+    'NAS100':'NASDAQ:NDX',   'US30':'DJ:DJI',          'SPX500':'SP:SPX',
+    'GER40':'XETR:DAX',      'UK100':'LSE:UKX',
+    'BANKNIFTY':'NSE:BANKNIFTY', 'NIFTY50':'NSE:NIFTY',
+    'BTCUSD':'BITSTAMP:BTCUSD', 'ETHUSD':'BITSTAMP:ETHUSD',
+  };
+  return map[symbol.toUpperCase()] || `OANDA:${symbol.toUpperCase()}`;
+}     
 function formatDate(ds){if(!ds) return '';return new Date(ds+'T00:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});}
 
 // Auto-fill TV URL
