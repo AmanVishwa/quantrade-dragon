@@ -3153,6 +3153,7 @@ function renderPairsGrid(container){
         colorTheme: localStorage.getItem('tj_theme')==='light' ? 'light' : 'dark',
         isTransparent: true,
         autosize: true,
+        chartType: 'candlestick', 
         largeChartUrl: pair.tvUrl || ''
       });
       chartWrap.appendChild(tvScript);
