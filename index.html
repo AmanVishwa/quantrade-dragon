@@ -3104,25 +3104,22 @@ function renderPairsGrid(container){
     card.className=`pair-card ${bc}`;
     card.dataset.pairId = pair.id;
     card.innerHTML=`
-      <div class="pair-card-top">
-          <div>
-            <div class="pair-sym">${pair.symbol}</div>
-            <div class="pair-cat">${pair.category}</div>
-            ${pair.htfBias?`<div style="margin-top:8px"><span class="badge ${pair.htfBias==='Bullish'?'badge-bull':pair.htfBias==='Bearish'?'badge-bear':'badge-neu'}">${pair.htfBias}</span></div>`:''}
-          </div>
-          <div style="text-align:right">
-            <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-4);letter-spacing:1px;margin-bottom:4px">${analyses.length} ENTRIES</div>
-            ${pair.session?`<div style="font-family:var(--font-mono);font-size:9px;color:var(--text-3)">${pair.session}</div>`:''}
-          </div>
-         </div>
-         
-         <!-- TradingView Mini Chart -->
-         <div id="tv-chart-${pair.id}" style="margin:12px -20px;height:160px;overflow:hidden;position:relative">
-           <div class="tradingview-widget-container" style="height:160px">
-             <div class="tradingview-widget-container__widget" style="height:160px"></div>
+         <!-- TradingView Mini Chart — flush to top -->
+         <div id="tv-chart-${pair.id}" style="margin:-20px -20px 0 -20px;height:180px;overflow:hidden;position:relative;border-radius:16px 16px 0 0">
+           <div class="tradingview-widget-container" style="height:180px">
+             <div class="tradingview-widget-container__widget" style="height:180px"></div>
            </div>
          </div>
-         
+
+         <!-- Bias + meta row below chart -->
+         <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0 8px">
+           <div style="display:flex;align-items:center;gap:8px">
+             ${pair.htfBias?`<span class="badge ${pair.htfBias==='Bullish'?'badge-bull':pair.htfBias==='Bearish'?'badge-bear':'badge-neu'}">${pair.htfBias}</span>`:'<span class="badge badge-neu">NEUTRAL</span>'}
+             ${pair.session?`<span style="font-family:var(--font-mono);font-size:9px;color:var(--text-3)">${pair.session}</span>`:''}
+           </div>
+           <span style="font-family:var(--font-mono);font-size:9px;color:var(--text-4);letter-spacing:1px">${analyses.length} ENTRIES</span>
+         </div>
+
          <div class="pair-card-bottom">
           <div class="pair-metric">
             <div class="pair-metric-val ${typeof wr==='number'&&wr>=50?'jade':typeof wr==='number'?'crimson':''}">${typeof wr==='number'?wr+'%':wr}</div>
