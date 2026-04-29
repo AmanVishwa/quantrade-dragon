@@ -269,7 +269,7 @@ body::before {
   flex-direction: column;
   z-index: 100;
   transition: transform var(--dur-slow) var(--ease);
-  overflow-y: auto;  
+  /* overflow-y: auto;   */
 }
 
 /* Sidebar glow accent */
@@ -398,6 +398,7 @@ body.is-admin .nav-item.admin-only { display: flex; }
   flex: 1;
   overflow-y: auto;
   padding-bottom: 8px;
+  min-height: 60px;  
 }
 .pair-nav-item {
   display: flex;
