@@ -3665,7 +3665,7 @@ function populateGalleryFilters(){
   const sel=document.getElementById('gallery-pair-filter');
   sel.innerHTML='<option value="">All Pairs</option>'+state.pairs.map(p=>`<option value="${p.id}">${p.symbol}</option>`).join('');
 }
-function renderGallery(){
+window.renderGallery = function renderGallery(){
   const pairFilter=document.getElementById('gallery-pair-filter').value;
   const resultFilter=document.getElementById('gallery-result-filter').value;
   let analyses=[...state.analyses].filter(a=>a.screenshots&&a.screenshots.length>0).sort((a,b)=>new Date(b.date)-new Date(a.date));
