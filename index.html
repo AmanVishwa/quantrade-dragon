@@ -4313,6 +4313,7 @@ function getTVSymbol(symbol) {
     'GER40':'XETR:DAX',      'UK100':'LSE:UKX',
     'BANKNIFTY':'NSE:BANKNIFTY', 'NIFTY50':'NSE:NIFTY',
     'BTCUSD':'BITSTAMP:BTCUSD', 'ETHUSD':'BITSTAMP:ETHUSD',
+    'DXY':'TVC:DXY', 'USDX':'TVC:DXY', 
   };
   return map[symbol.toUpperCase()] || `OANDA:${symbol.toUpperCase()}`;
 }     
@@ -4392,6 +4393,7 @@ document.addEventListener('keydown',e=>{
       {proName:"OANDA:XAGUSD",   title:"Silver"},
       {proName:"OANDA:NAS100USD",title:"NAS100"},
       {proName:"OANDA:US30USD",  title:"US30"},
+      {proName:"TVC:DXY", title:"DXY"},
       // {proName:"NSE:BANKNIFTY",  title:"BANKNIFTY"},
       // {proName:"NSE:NIFTY",      title:"NIFTY 50"}
     ],
